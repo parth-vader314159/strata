@@ -1,0 +1,114 @@
+# Palo Alto Networks PAN-OS -- TRAFFIC log.
+# Family: csv. Positional, comma-separated, no names on the wire, and the
+# FUTURE_USE columns are real -- miscount them and every later column shifts.
+id: panos.traffic
+version: 2.0.0
+vendor: Palo Alto Networks
+product: PAN-OS
+title: PAN-OS Traffic Log
+family: csv
+
+signature:
+  must: [",TRAFFIC,"]
+  any: [",end,", ",start,", ",drop,", ",deny,"]
+  weight: 0.97
+
+pipeline:
+  - syslog: auto
+    optional: true          # some estates strip the envelope upstream
+  - columns:
+      - "-"                 # FUTURE_USE
+      - receive_time
+      - serial
+      - log_type
+      - subtype
+      - "-"                 # FUTURE_USE
+      - generated_time
+      - source_address
+      - destination_address
+      - nat_source_ip
+      - nat_destination_ip
+      - rule_name
+      - source_user
+      - destination_user
+      - application
+      - virtual_system
+      - source_zone
+      - destination_zone
+      - inbound_interface
+      - outbound_interface
+      - log_profile
+      - "-"                 # FUTURE_USE
+      - session_id
+      - repeat_count
+      - source_port
+      - destination_port
+      - nat_source_port
+      - nat_destination_port
+      - flags
+      - protocol
+      - action
+      - bytes_total
+      - bytes_sent
+      - bytes_received
+      - packets
+      - session_start
+      - elapsed_seconds
+      - url_category
+    sep: ","
+    quote: '"'
+
+coerce:
+  source_port: int
+  destination_port: int
+  bytes_total: int
+  bytes_sent: int
+  bytes_received: int
+  packets: int
+  repeat_count: int
+  elapsed_seconds: int
+
+clock:
+  field: generated_time
+  formats: [slashed]
+  zone: UTC
+
+emit:
+  class: 4001
+  category: 4
+  const:
+    activity_id: 6
+    severity_id: 1
+  fields:
+    src_endpoint.ip: source_address
+    src_endpoint.port: source_port
+    src_endpoint.zone: source_zone
+    src_endpoint.interface_name: inbound_interface
+    dst_endpoint.ip: destination_address
+    dst_endpoint.port: destination_port
+    dst_endpoint.zone: destination_zone
+    connection_info.protocol_name: protocol
+    connection_info.session_uid: session_id
+    traffic.bytes: bytes_total
+    traffic.bytes_out: bytes_sent
+    traffic.bytes_in: bytes_received
+    traffic.packets: packets
+    app_name: application
+    actor.user.name: source_user
+    firewall_rule.name: rule_name
+    device.hostname: log_host
+    device.uid: serial
+    duration: elapsed_seconds
+  enums:
+    disposition_id:
+      source: action
+      table:
+        allow: 1
+        deny: 2
+        drop: 3
+        drop-icmp: 3
+        reset-both: 8
+        reset-client: 8
+        reset-server: 8
+      default: 99
+      keep: disposition_orig

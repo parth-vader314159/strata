@@ -1,0 +1,57 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: { python: ["3.11", "3.12"] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ matrix.python }}" }
+      - run: pip install -r requirements-dev.txt
+      - name: Test suite
+        run: python -m pytest -q
+      - name: Every shipped grammar must load and compile
+        run: python strata.py check
+      - name: End-to-end demonstration
+        run: python strata.py demo --count 6000
+      - name: Losslessness must be exactly 100%
+        run: python strata.py audit          # exits non-zero below 1.0
+
+  airgap:
+    # The air-gap guarantee is enforced by CI, not by memory. Teams discover a
+    # forgotten CDN link on demo day; we discover it on every push.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No external references in runtime code
+        run: |
+          if grep -rEn "https?://" strata/ grammars/ \
+               --include="*.py" --include="*.html" --include="*.yaml" \
+             | grep -vE "(example\.(com|net|org)|malware-test\.invalid|127\.0\.0\.1|localhost|www\.w3\.org)" \
+             | grep -vE "^[^:]+:[0-9]+: *#" ; then
+            echo "::error::external reference in runtime code — breaks requirement (j)"
+            exit 1
+          fi
+          echo "no external references"
+      - name: No network clients imported
+        run: |
+          if grep -rn "import requests\|urllib.request\|urlopen\|httpx" strata/ ; then
+            echo "::error::network client imported in runtime code"; exit 1
+          fi
+          echo "no network clients"
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - name: Grammar reference must match the grammars
+        run: |
+          python tools/gen_reference.py
+          git diff --exit-code docs/GRAMMAR-REFERENCE.md \
+            || (echo "::error::docs/GRAMMAR-REFERENCE.md is stale — run make docs"; exit 1)

@@ -1,0 +1,55 @@
+# Generic IBM QRadar LEEF.
+# Family: leef -- the seventh structural class. Like CEF this covers a whole
+# class of vendors. Distinguished from CEF by a TAB-separated payload after a
+# pipe-delimited header, which is why it needs its own extractor.
+id: generic.leef
+version: 2.0.0
+vendor: Generic
+product: LEEF
+title: Generic LEEF (any vendor)
+family: leef
+
+signature:
+  pattern: "LEEF:\\d(\\.\\d)?\\|"
+  weight: 0.93
+
+pipeline:
+  - syslog: auto
+    optional: true
+  - leef: true
+
+coerce:
+  srcPort: int
+  dstPort: int
+  totalBytes: int
+
+clock:
+  field: devTime
+  formats: [iso8601, epoch_ms, epoch]
+  zone: UTC
+
+emit:
+  class: 4001
+  category: 4
+  const: {activity_id: 6}
+  fields:
+    # A generic grammar must report the REAL vendor and product,
+    # which the header carries. These override the grammar's own
+    # placeholder metadata, so a CEF event from Imperva says Imperva.
+    metadata.product.vendor_name: leef_vendor
+    metadata.product.name: leef_product
+    src_endpoint.ip: src
+    src_endpoint.port: srcPort
+    dst_endpoint.ip: dst
+    dst_endpoint.port: dstPort
+    connection_info.protocol_name: proto
+    traffic.bytes: totalBytes
+    actor.user.name: usrName
+    finding_info.uid: leef_event_id
+    metadata.product.version: leef_device_version
+  enums:
+    disposition_id:
+      source: action
+      table: {accept: 1, allow: 1, permit: 1, deny: 2, block: 2, drop: 3, reject: 2}
+      default: 99
+      keep: disposition_orig

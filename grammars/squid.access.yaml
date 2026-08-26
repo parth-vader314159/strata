@@ -1,0 +1,61 @@
+# Squid proxy -- native access.log.
+# Family: delimited. A fifth structural shape: whitespace-positional, no
+# quoting, no keys, and the last column absorbs the remainder.
+id: squid.access
+version: 2.0.0
+vendor: Squid
+product: Squid Proxy
+title: Squid Native Access Log
+family: delimited
+
+signature:
+  pattern: "TCP_(MISS|HIT|DENIED|TUNNEL|REFRESH|MEM)"
+  weight: 0.94
+
+pipeline:
+  - whitespace:
+      - epoch_time
+      - duration_ms
+      - client_address
+      - result_code
+      - bytes
+      - method
+      - url
+      - user
+      - hierarchy
+      - content_type
+
+coerce:
+  duration_ms: int
+  bytes: int
+
+clock:
+  field: epoch_time
+  formats: [epoch]
+  zone: UTC
+
+emit:
+  class: 4002                # HTTP Activity
+  category: 4
+  const: {activity_id: 1}
+  fields:
+    src_endpoint.ip: client_address
+    traffic.bytes: bytes
+    http_request.url.text: url
+    http_request.http_method: method
+    actor.user.name: user
+    metadata.event_code: result_code
+    duration: duration_ms
+  enums:
+    disposition_id:
+      source: result_code
+      table:
+        TCP_DENIED/403: 2
+        TCP_DENIED/407: 2
+        TCP_MISS/200: 1
+        TCP_HIT/200: 1
+        TCP_TUNNEL/200: 1
+        TCP_MEM_HIT/200: 1
+        TCP_REFRESH_HIT/200: 1
+      default: 99
+      keep: disposition_orig

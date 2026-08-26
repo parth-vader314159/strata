@@ -1,0 +1,64 @@
+# Fortinet FortiGate -- forward traffic.
+# Family: kv. Self-describing, so a firmware update that adds a field is
+# harmless here -- the exact opposite of the CSV case above.
+id: fortigate.traffic
+version: 2.0.0
+vendor: Fortinet
+product: FortiGate
+title: FortiGate Forward Traffic
+family: kv
+
+signature:
+  must: ["devname="]
+  any: ['type="traffic"', "type=traffic"]
+  weight: 0.96
+
+pipeline:
+  - syslog: auto
+    optional: true
+  - kv: true
+
+coerce:
+  srcport: int
+  dstport: int
+  sentbyte: int
+  rcvdbyte: int
+  sentpkt: int
+  rcvdpkt: int
+  duration: int
+
+clock:
+  field: eventtime
+  formats: [epoch, epoch_ms]
+  zone: UTC
+
+emit:
+  class: 4001
+  category: 4
+  const:
+    activity_id: 6
+    severity_id: 1
+  fields:
+    src_endpoint.ip: srcip
+    src_endpoint.port: srcport
+    src_endpoint.zone: srcintfrole
+    src_endpoint.interface_name: srcintf
+    dst_endpoint.ip: dstip
+    dst_endpoint.port: dstport
+    dst_endpoint.zone: dstintfrole
+    dst_endpoint.interface_name: dstintf
+    connection_info.session_uid: sessionid
+    traffic.bytes_out: sentbyte
+    traffic.bytes_in: rcvdbyte
+    app_name: app
+    actor.user.name: srcuser
+    firewall_rule.name: policyname
+    device.hostname: devname
+    device.uid: devid
+    duration: duration
+  enums:
+    disposition_id:
+      source: action
+      table: {accept: 1, allow: 1, deny: 2, block: 2, drop: 3, close: 8, timeout: 99}
+      default: 99
+      keep: disposition_orig
