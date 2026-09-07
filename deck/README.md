@@ -1,7 +1,8 @@
-# Pitch deck
+# Presentation materials
 
 `STRATA-SIH-Deck.pptx` — 15 slides, speaker notes on every one.
 `STRATA-SIH-Deck.pdf` — the same deck as a handout / projector fallback.
+`VIDEO-SCRIPT.md` — script, shot list and recording notes for the submission video.
 
 Rebuild after editing `build_deck.js`:
 
