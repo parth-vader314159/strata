@@ -8,6 +8,12 @@ before.
 **Main cut: 2:00.** A 60-second cut is at the bottom if the rules turn out to be
 tighter.
 
+> **No editing required.** [`video/visuals.html`](video/) is the entire visual
+> track, already built — open it, press `F` then `A`, read the script aloud, and
+> screen-record it in one take. The "On screen" column below describes what that
+> page shows you; you do not have to make any of it. See
+> [`video/README.md`](video/README.md).
+
 ---
 
 ## The one rule for this video
@@ -25,14 +31,14 @@ Everything below is built around that.
 
 | Time | Voiceover | On screen |
 |---|---|---|
-| **0:00–0:20** | Imagine four people witness the same incident. Each one speaks a different language. A translator listens to all four, writes one short summary of each — and then throws the original statements away. *(beat)* Months later, an investigator needs one small detail. It wasn't in the summary. It's gone. | Simple animation: four speech bubbles in four scripts → one small summary card → the four originals drop into a bin. Keep it plain; no stock footage. |
-| **0:20–0:42** | This is not a story. It's what happens inside every large computer network, a billion times a day. Every firewall, every router, every security device writes down what it saw — each in its own format. Software translates them so a security team can search them. And the originals are deleted. | Swap the four people for four device icons. Show four **real** log lines — Palo Alto, FortiGate, Suricata, Cisco ASA — all describing the same blocked connection. Highlight the same IP address in each, in a different position. Then grey the lines out and fade them. |
-| **0:42–0:52** | So when a new kind of attack appears, and an investigator needs a detail nobody thought to keep — it's already gone. *(beat)* We built the translator that never throws anything away. | The four lines vanish, leaving a black screen. Then the STRATA title card. |
-| **0:52–1:10** | STRATA reads any security device's format and rewrites it into one common language — so for the first time, everything can be searched together. | Console overview. Press *Generate traffic*, let the pipeline fill. Show the vendor list on the left. |
-| **1:10–1:26** | But it keeps every original too. Every byte, exactly as it arrived. And it can prove — mathematically — that a single record has not been altered, without revealing anything about any other record. | **The money shot.** The provenance inspector: the raw log line with every extracted value highlighted, hover to show each one linked to the field it became. Then cut to `strata audit` printing `FIDELITY 100.000000%`. |
-| **1:26–1:40** | Which means if we ever translate something wrongly, we can fix it — and re-translate the entire past. No other tool can do that, because no other tool kept the originals. | `strata rewind` output: `20,000 replayed · 20,000 re-derived · 0 quarantined`. Let it sit on screen for a full second. |
-| **1:40–1:52** | And when a device nobody has ever seen starts sending logs, STRATA studies it and writes its own translator — in milliseconds, instead of the days an engineer would take. | Forge tab: quarantined unknown lines → *Analyse & propose* → the generated YAML → *Publish*. Speed this up 2× if it runs long. |
-| **1:52–2:00** | Over eleven thousand events a second. More than a billion a day. On one ordinary machine, completely offline. *(beat)* STRATA. Nothing is translated away. | Bench number, then an "AIR-GAPPED" badge or a hand unplugging an ethernet cable. End on the STRATA card. |
+| **0:00–0:20** | Imagine four people witness the same incident. Each one speaks a different language. A translator listens to all four, writes one short summary of each — and then throws the original statements away. *(beat)* Months later, an investigator needs one small detail. It wasn't in the summary. It's gone. | Beat 2 — four witness statements appear one by one in four languages, a small summary card forms, and the four originals grey out and drop away. |
+| **0:20–0:42** | This is not a story. It's what happens inside every large computer network, a billion times a day. Every firewall, every router, every security device writes down what it saw — each in its own format. Software translates them so a security team can search them. And the originals are deleted. | Beats 3–4 — the same four log lines for real (Palo Alto, FortiGate, Suricata, Cisco ASA), one IP highlighted in each to show it sits in a different place every time. Then black: "And the originals are deleted." |
+| **0:42–0:52** | So when a new kind of attack appears, and an investigator needs a detail nobody thought to keep — it's already gone. *(beat)* We built the translator that never throws anything away. | Beat 5 — the STRATA card. |
+| **0:52–1:10** | STRATA reads any security device's format and rewrites it into one common language — so for the first time, everything can be searched together. | Beat 6 — the console overview, live counters and pipeline filled. |
+| **1:10–1:26** | But it keeps every original too. Every byte, exactly as it arrived. And it can prove — mathematically — that a single record has not been altered, without revealing anything about any other record. | Beats 7–8 — the provenance inspector (original bytes, every value highlighted and linked to its OCSF field), then the integrity page reading 100.0000%. |
+| **1:26–1:40** | Which means if we ever translate something wrongly, we can fix it — and re-translate the entire past. No other tool can do that, because no other tool kept the originals. | Beat 9 — `strata rewind`: 20,000 replayed, 20,000 re-derived, 0 quarantined, 0 bytes written. |
+| **1:40–1:52** | And when a device nobody has ever seen starts sending logs, STRATA studies it and writes its own translator — in milliseconds, instead of the days an engineer would take. | Beat 10 — `strata forge`: structure detected, 8 fields found, 7 mapped, published with no restart. |
+| **1:52–2:00** | Over eleven thousand events a second. More than a billion a day. On one ordinary machine, completely offline. *(beat)* STRATA. Nothing is translated away. | Beats 11–12 — the three numbers, then the end card. Hold it three seconds before you stop recording. |
 
 **Word count: ~300.** That is about 2:05 at a natural pace. If you run long, the
 first thing to cut is the second sentence of the 1:26 block.
@@ -115,29 +121,20 @@ one. ~125 words, which is about 52 seconds of speech plus room for the pauses.
 
 **Voice.** Slower than feels natural — roughly 145 words per minute. The most
 common mistake in hackathon videos is rushing, and it reads as nervousness.
-Record the voiceover *first*, then cut the screen recording to fit it. Doing it
-the other way round means re-recording your voice to match your mouse.
+Record your voice and the screen together in one pass; separate audio has to be
+synced afterwards, and syncing is editing.
 
-**Screen capture.** 1080p minimum. Move the mouse deliberately and slowly —
-fast cursor movement is unwatchable at small sizes. Zoom the browser to 125%
-before recording so numbers are legible on a phone. Hide bookmarks, notifications
-and any other tabs.
+**Screen capture.** 1080p minimum. Maximise the browser window. Close
+notifications, other tabs and the bookmarks bar before you start — a popup
+mid-take means a retake.
 
-**Before you record, run:**
+**You do not need to demo live.** The reel already contains the console
+screenshots and the command output, so there is no alt-tabbing, nothing to wait
+for, and no risk of something failing on camera. Everything is one browser tab.
 
-```bash
-rm -rf var && rm -f grammars/meridian.gateway.yaml
-python3 strata.py console
-```
-
-That resets to a clean state so the quarantine and Forge sections have something
-to show. If you skip it, the unknown format is already onboarded and step four
-has nothing to demonstrate.
-
-**Rehearse the three commands** so their output is already on screen when you
-need it — `audit`, `rewind --dry-run`, `bench`. Do not run them live in the
-video; a five-second pause while something computes is five seconds of a
-two-minute budget.
+**Rehearse twice with cue cards on** (`N` in the reel), then turn them off and
+record. Do not leave them on — the cue strip is part of the page and will
+appear in your recording.
 
 **Do not say:** OCSF, Merkle tree, content-addressed, normalization, grammar,
 triage, schema. Every one of those is in the deck, where it belongs. Put OCSF

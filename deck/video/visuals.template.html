@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>STRATA — video visuals</title>
+<style>
+:root{
+  --paper:#FAFAF9; --surface:#F2F1EE; --sunk:#EAE9E5; --rule:#E2E1DC; --rule-2:#CFCEC8;
+  --ink:#14151A; --ink-2:#494D56; --faint:#8B909A;
+  --signal:#D9500C; --signal-ink:#B23F06; --signal-soft:#FCEDE3;
+  --good:#1C6E46; --warn:#96620A; --bad:#B23A2C;
+  --dark:#0F1012; --dark-rule:#2A2C31; --dark-ink:#ECECE9; --dark-muted:#9AA0A9;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--paper);color:var(--ink);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;cursor:none;
+}
+body.showcursor{cursor:default}
+
+/* ------------------------------------------------------------ stage */
+.slide{
+  position:fixed;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:5vh 6vw;opacity:0;visibility:hidden;
+  transition:opacity .45s ease;
+  background:var(--paper);
+}
+.slide.on{opacity:1;visibility:visible;z-index:2}
+.slide.dark{background:var(--dark);color:var(--dark-ink)}
+
+h1{font-size:clamp(40px,7.2vw,116px);font-weight:800;letter-spacing:-.02em;line-height:1.04}
+h2{font-size:clamp(26px,3.9vw,62px);font-weight:750;letter-spacing:-.015em;line-height:1.12}
+.kicker{
+  font-size:clamp(11px,1.15vw,18px);font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--signal-ink);margin-bottom:2.4vh;
+}
+.dark .kicker{color:var(--signal)}
+.sub{font-size:clamp(15px,1.6vw,26px);color:var(--ink-2);margin-top:2.2vh;line-height:1.5}
+.dark .sub{color:var(--dark-muted)}
+.mark{width:clamp(14px,1.5vw,26px);aspect-ratio:1;background:var(--signal);margin-bottom:2.6vh}
+
+/* ------------------------------------------------------- witnesses */
+.bubbles{display:grid;grid-template-columns:repeat(2,1fr);gap:2.4vh 2.2vw;width:min(1120px,84vw)}
+.bub{
+  background:var(--surface);border:1px solid var(--rule);border-radius:16px;
+  padding:2.4vh 2vw;font-size:clamp(14px,1.5vw,24px);line-height:1.45;
+  opacity:0;transform:translateY(14px);position:relative;
+}
+.bub .who{
+  font-size:clamp(10px,.95vw,15px);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--faint);font-weight:700;margin-bottom:1vh;
+}
+.on .bub{animation:pop .5s ease forwards}
+.on .bub:nth-child(1){animation-delay:.5s}
+.on .bub:nth-child(2){animation-delay:1.3s}
+.on .bub:nth-child(3){animation-delay:2.1s}
+.on .bub:nth-child(4){animation-delay:2.9s}
+@keyframes pop{to{opacity:1;transform:translateY(0)}}
+
+.summary{
+  margin-top:3.4vh;width:min(560px,60vw);background:var(--signal-soft);
+  border:2px solid var(--signal);border-radius:14px;padding:2.2vh 2vw;
+  opacity:0;transform:scale(.94);
+}
+.on .summary{animation:pop2 .55s ease 4.6s forwards}
+@keyframes pop2{to{opacity:1;transform:scale(1)}}
+.summary .lbl{
+  font-size:clamp(10px,.95vw,15px);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--signal-ink);font-weight:700;margin-bottom:.8vh;
+}
+.summary .txt{font-size:clamp(15px,1.6vw,26px);font-weight:650}
+
+/* the originals being discarded */
+.on .bubbles{animation:discard 1.9s ease 6.4s forwards}
+@keyframes discard{
+  to{opacity:.12;filter:grayscale(1);transform:translateY(46px) scale(.96)}
+}
+
+/* -------------------------------------------------------- log lines */
+.logs{width:min(1240px,90vw);display:flex;flex-direction:column;gap:1.5vh}
+.log{
+  display:flex;align-items:center;gap:1.4vw;background:var(--sunk);
+  border:1px solid var(--rule);border-radius:12px;padding:1.7vh 1.5vw;
+  opacity:0;transform:translateX(-10px);
+}
+.on .log{animation:slidein .45s ease forwards}
+.on .log:nth-child(1){animation-delay:.35s}
+.on .log:nth-child(2){animation-delay:1.15s}
+.on .log:nth-child(3){animation-delay:1.95s}
+.on .log:nth-child(4){animation-delay:2.75s}
+@keyframes slidein{to{opacity:1;transform:translateX(0)}}
+.log .vendor{
+  flex:0 0 clamp(84px,10vw,168px);font-weight:750;color:var(--signal-ink);
+  font-size:clamp(11px,1.2vw,20px);
+}
+.log code{
+  font-family:var(--mono);font-size:clamp(9px,.94vw,15px);color:var(--ink-2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.log mark{background:var(--signal-soft);color:var(--signal-ink);font-weight:700;
+  padding:.1em .25em;border-radius:3px}
+.samefact{
+  margin-top:3.2vh;font-size:clamp(14px,1.5vw,24px);color:var(--ink-2);opacity:0;
+}
+.on .samefact{animation:pop .6s ease 3.8s forwards}
+
+/* --------------------------------------------------------- terminal */
+.term{
+  width:min(980px,84vw);background:#17181B;border:1px solid var(--dark-rule);
+  border-radius:14px;padding:3vh 2.4vw;font-family:var(--mono);
+  font-size:clamp(12px,1.32vw,23px);line-height:2;color:var(--dark-ink);
+  text-align:left;
+}
+.term .p{color:var(--signal);font-weight:700}
+.term .g{color:#54B888;font-weight:700}
+.term .d{color:var(--dark-muted)}
+
+/* ------------------------------------------------------------ shots */
+.shot{
+  max-width:min(1500px,92vw);max-height:74vh;
+  border:1px solid var(--rule);border-radius:14px;
+  box-shadow:0 24px 70px rgba(20,21,26,.16);overflow:hidden;background:#fff;
+}
+.shot img{display:block;max-width:100%;max-height:74vh;width:auto;height:auto}
+.caption{
+  margin-top:2.6vh;font-size:clamp(13px,1.4vw,23px);color:var(--ink-2);text-align:center;
+}
+.caption b{color:var(--ink);font-weight:700}
+
+/* ------------------------------------------------------------ stats */
+.stats{display:flex;gap:3.6vw;flex-wrap:wrap;justify-content:center;margin-top:1vh}
+.stat .n{font-size:clamp(34px,5.4vw,88px);font-weight:800;letter-spacing:-.02em;color:var(--signal)}
+.dark .stat .n{color:var(--signal)}
+.stat .l{
+  font-size:clamp(11px,1.1vw,18px);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dark-muted);font-weight:700;margin-top:.8vh;
+}
+
+/* ------------------------------------------------- director aids */
+#aids{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;padding:14px 22px;
+  background:rgba(15,16,18,.93);color:#ECECE9;font-family:var(--sans);
+  font-size:15px;display:none;gap:20px;align-items:flex-start;
+}
+#aids.on{display:flex}
+#aids .cue{flex:1;line-height:1.5}
+#aids .cue b{color:#FF7A33}
+#aids .meta{flex:0 0 190px;text-align:right;font-family:var(--mono);font-size:14px;color:#9AA0A9}
+#aids .meta .big{font-size:26px;color:#ECECE9;font-weight:700}
+#bar{position:fixed;left:0;bottom:0;height:3px;background:var(--signal);width:0;z-index:60;
+  transition:width .25s linear;display:none}
+#bar.on{display:block}
+#help{
+  position:fixed;top:0;left:0;right:0;z-index:50;padding:12px 22px;
+  background:rgba(15,16,18,.93);color:#9AA0A9;font-family:var(--mono);font-size:13px;
+  display:none;
+}
+#help.on{display:block}
+#help b{color:#FF7A33}
+</style>
+</head>
+<body>
+
+<!-- 1 · opening card (silent, 5s) -->
+<section class="slide dark" data-t="5">
+  <div class="mark"></div>
+  <h2 style="text-align:center">Smart India Hackathon</h2>
+  <div class="sub" style="text-align:center;font-size:clamp(15px,1.9vw,30px)">
+    Universal Log Pre-processing Framework
+  </div>
+</section>
+
+<!-- 2 · witnesses (20s) -->
+<section class="slide" data-t="20">
+  <div class="bubbles">
+    <div class="bub"><div class="who">Witness 1</div>“The blue car ran the red light.”</div>
+    <div class="bub"><div class="who">Witness 2</div>“नीली गाड़ी ने लाल बत्ती पार की।”</div>
+    <div class="bub"><div class="who">Witness 3</div>“La voiture bleue a grillé le feu rouge.”</div>
+    <div class="bub"><div class="who">Witness 4</div>“El coche azul se saltó el semáforo.”</div>
+  </div>
+  <div class="summary">
+    <div class="lbl">The translator keeps only this</div>
+    <div class="txt">Blue car · red light · 09:42</div>
+  </div>
+</section>
+
+<!-- 3 · the same four lines, for real (16s) -->
+<section class="slide" data-t="16">
+  <div class="kicker">the same thing happens to machines</div>
+  <div class="logs">
+    <div class="log"><div class="vendor">Palo Alto</div>
+      <code>1,2026/08/26 14:32:07,0142,TRAFFIC,end,...,<mark>10.10.4.55</mark>,203.0.113.42,...,deny</code></div>
+    <div class="log"><div class="vendor">FortiGate</div>
+      <code>date=2026-08-26 srcip=<mark>10.10.4.55</mark> srcport=49832 dstip=203.0.113.42 action="deny"</code></div>
+    <div class="log"><div class="vendor">Suricata</div>
+      <code>{"timestamp":"2026-08-26T14:32:07","src_ip":"<mark>10.10.4.55</mark>","dest_ip":"203.0.113.42"}</code></div>
+    <div class="log"><div class="vendor">Cisco ASA</div>
+      <code>%ASA-6-106023: Deny outbound TCP for outside:203.0.113.42/443 to inside:<mark>10.10.4.55</mark></code></div>
+  </div>
+  <div class="samefact">Four devices. One event. Four completely different vocabularies.</div>
+</section>
+
+<!-- 4 · it's gone (6s) -->
+<section class="slide dark" data-t="6">
+  <h1 style="text-align:center">And the originals<br>are deleted.</h1>
+</section>
+
+<!-- 5 · STRATA reveal (10s) -->
+<section class="slide dark" data-t="10">
+  <div class="mark"></div>
+  <h1 style="letter-spacing:.06em">STRATA</h1>
+  <div class="sub" style="color:var(--signal);font-size:clamp(16px,2.1vw,34px);margin-top:2.6vh">
+    The translator that never throws anything away.
+  </div>
+</section>
+
+<!-- 6 · console overview (18s) -->
+<section class="slide" data-t="18">
+  <div class="shot"><img src="__IMG_OVERVIEW__" alt="STRATA console overview"></div>
+  <div class="caption">Every device's format, rewritten into <b>one common language</b>.</div>
+</section>
+
+<!-- 7 · provenance inspector (10s) -->
+<section class="slide" data-t="10">
+  <div class="shot"><img src="__IMG_INSPECTOR__" alt="STRATA provenance inspector"></div>
+  <div class="caption">The <b>original bytes</b>, kept — every value linked to the field it became.</div>
+</section>
+
+<!-- 8 · integrity (6s) -->
+<section class="slide" data-t="6">
+  <div class="shot"><img src="__IMG_INTEGRITY__" alt="STRATA integrity audit"></div>
+  <div class="caption"><b>100.0000%</b> byte-exact — and provable one record at a time.</div>
+</section>
+
+<!-- 9 · rewind (14s) -->
+<section class="slide dark" data-t="14">
+  <div class="kicker">fix the translation, fix the past</div>
+  <div class="term">
+    <div><span class="p">$</span> strata rewind</div>
+    <div class="d">&nbsp;&nbsp;records replayed &nbsp;&nbsp;&nbsp;20,000</div>
+    <div class="d">&nbsp;&nbsp;re-derived &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;20,000</div>
+    <div class="d">&nbsp;&nbsp;still quarantined &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</div>
+    <div><span class="g">&nbsp;&nbsp;ledger bytes written &nbsp;&nbsp;0</span></div>
+  </div>
+  <div class="sub" style="text-align:center">Six months of history, corrected — from originals nobody touched.</div>
+</section>
+
+<!-- 10 · the forge (12s) -->
+<section class="slide dark" data-t="12">
+  <div class="kicker">a device nobody has ever seen</div>
+  <div class="term">
+    <div><span class="p">$</span> strata forge unknown.log</div>
+    <div class="d">&nbsp;&nbsp;structure detected &nbsp;&nbsp;kv</div>
+    <div class="d">&nbsp;&nbsp;fields &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8 found, 7 mapped</div>
+    <div class="d">&nbsp;&nbsp;proposed in &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8 ms</div>
+    <div><span class="g">&nbsp;&nbsp;published &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11 grammars active, no restart</span></div>
+  </div>
+  <div class="sub" style="text-align:center">It writes its own translator. Milliseconds, not engineer-days.</div>
+</section>
+
+<!-- 11 · numbers (6s) -->
+<section class="slide dark" data-t="6">
+  <div class="stats">
+    <div class="stat"><div class="n">11,440</div><div class="l">events / second</div></div>
+    <div class="stat"><div class="n">1 billion</div><div class="l">per day, one machine</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">network required</div></div>
+  </div>
+</section>
+
+<!-- 12 · close (hold) -->
+<section class="slide dark" data-t="0">
+  <div class="mark"></div>
+  <h1 style="letter-spacing:.06em">STRATA</h1>
+  <div class="sub" style="color:var(--signal);font-size:clamp(16px,2.1vw,34px);margin-top:2.4vh">
+    Nothing is translated away.
+  </div>
+  <div class="sub" style="margin-top:5vh;font-size:clamp(12px,1.3vw,20px);letter-spacing:.06em">
+    Team __TEAM__ · __COLLEGE__
+  </div>
+</section>
+
+<div id="bar"></div>
+<div id="help">
+  <b>SPACE</b> next &nbsp;·&nbsp; <b>←</b> back &nbsp;·&nbsp; <b>A</b> autoplay &nbsp;·&nbsp;
+  <b>N</b> cue cards &nbsp;·&nbsp; <b>R</b> restart &nbsp;·&nbsp; <b>H</b> hide this &nbsp;·&nbsp;
+  <b>F</b> fullscreen
+</div>
+<div id="aids">
+  <div class="cue" id="cue"></div>
+  <div class="meta"><div class="big" id="clock">0:00</div><div id="pos"></div></div>
+</div>
+
+<script>
+const CUES = [
+ "<b>[silent — 5s]</b> Let this card sit. Start speaking when the witnesses appear.",
+ "Imagine four people witness the same incident. Each one speaks a different language. A translator listens to all four, writes one short summary of each — and then throws the original statements away. // Months later, an investigator needs one small detail. It wasn't in the summary. It's gone.",
+ "This is not a story. It's what happens inside every large computer network, a billion times a day. Every firewall, every router, every security device writes down what it saw — each in its own format. Software translates them so a security team can search them.",
+ "And the originals are deleted. // So when a new kind of attack appears, and an investigator needs a detail nobody thought to keep — it's already gone.",
+ "We built the translator that never throws anything away.",
+ "STRATA reads any security device's format and rewrites it into one common language — so for the first time, everything can be searched together.",
+ "But it keeps every original too. Every byte, exactly as it arrived.",
+ "And it can prove — mathematically — that a single record has not been altered, without revealing anything about any other record.",
+ "Which means if we ever translate something wrongly, we can fix it — and re-translate the entire past. No other tool can do that, because no other tool kept the originals.",
+ "And when a device nobody has ever seen starts sending logs, STRATA studies it and writes its own translator — in milliseconds, instead of the days an engineer would take.",
+ "Over eleven thousand events a second. More than a billion a day. On one ordinary machine, completely offline.",
+ "<b>STRATA. Nothing is translated away.</b> // Hold 3 seconds, then stop recording."
+];
+
+const slides = [...document.querySelectorAll('.slide')];
+const bar = document.getElementById('bar');
+const aids = document.getElementById('aids');
+const help = document.getElementById('help');
+const cue = document.getElementById('cue');
+const clock = document.getElementById('clock');
+const pos = document.getElementById('pos');
+
+let i = 0, auto = false, timer = null, t0 = null, tick = null;
+const total = slides.reduce((a, s) => a + (+s.dataset.t || 0), 0);
+
+function render(){
+  slides.forEach((s, n) => s.classList.toggle('on', n === i));
+  // restart CSS animations on the slide we just entered
+  const cur = slides[i];
+  cur.querySelectorAll('.bubbles,.bub,.summary,.log,.samefact').forEach(el => {
+    el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+  });
+  cue.innerHTML = CUES[i] || '';
+  pos.textContent = 'slide ' + (i + 1) + '/' + slides.length;
+  if (auto) schedule();
+}
+function schedule(){
+  clearTimeout(timer);
+  const secs = +slides[i].dataset.t || 0;
+  if (secs > 0 && i < slides.length - 1) timer = setTimeout(() => go(i + 1), secs * 1000);
+}
+function go(n){
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  render();
+}
+function startClock(){
+  if (tick) return;
+  t0 = Date.now();
+  tick = setInterval(() => {
+    const s = Math.floor((Date.now() - t0) / 1000);
+    clock.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    bar.style.width = Math.min(100, (s / total) * 100) + '%';
+  }, 250);
+}
+function toggleAuto(){
+  auto = !auto;
+  if (auto){ startClock(); bar.classList.add('on'); schedule(); }
+  else { clearTimeout(timer); }
+  clock.style.color = auto ? '#FF7A33' : '#ECECE9';
+}
+
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (e.key === ' ' || e.key === 'ArrowRight' || e.key === 'PageDown'){ e.preventDefault(); clearTimeout(timer); go(i + 1); if (auto) schedule(); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); clearTimeout(timer); go(i - 1); if (auto) schedule(); }
+  else if (k === 'a'){ toggleAuto(); }
+  else if (k === 'n'){ aids.classList.toggle('on'); document.body.classList.toggle('showcursor'); }
+  else if (k === 'h'){ help.classList.toggle('on'); }
+  else if (k === 'b'){ bar.classList.toggle('on'); }
+  else if (k === 'r'){ clearTimeout(timer); clearInterval(tick); tick = null; auto = false; bar.style.width = 0; clock.textContent = '0:00'; go(0); }
+  else if (k === 'f'){ document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+});
+addEventListener('click', () => { clearTimeout(timer); go(i + 1); if (auto) schedule(); });
+
+render();
+setTimeout(() => help.classList.add('on'), 200);
+setTimeout(() => help.classList.remove('on'), 6000);
+</script>
+</body>
+</html>

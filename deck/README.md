@@ -2,7 +2,8 @@
 
 `STRATA-SIH-Deck.pptx` — 15 slides, speaker notes on every one.
 `STRATA-SIH-Deck.pdf` — the same deck as a handout / projector fallback.
-`VIDEO-SCRIPT.md` — script, shot list and recording notes for the submission video.
+`VIDEO-SCRIPT.md` — script and recording notes for the submission video.
+`video/` — the visual track as one self-contained page. Open, press F then A, record. No editing.
 
 Rebuild after editing `build_deck.js`:
 

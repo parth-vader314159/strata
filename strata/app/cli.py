@@ -20,7 +20,7 @@ from ..io.intake import Gate, read_lines
 from ..io.outlets import CEF, NDJSON, Memory, Parquet
 from ..learn.forge import Forge
 from ..parse.grammar import Library
-from ..store.ledger import Ledger
+from ..store.ledger import Ledger, LedgerBusy
 
 ROOT = Path(__file__).resolve().parents[2]
 GRAMMARS = ROOT / "grammars"
@@ -180,7 +180,11 @@ def cmd_prove(args) -> int:
 
 
 def cmd_rewind(args) -> int:
-    pipe, ledger = build(outlets=not args.commit is False)
+    if args.dry_run and args.commit:
+        print("rewind: --dry-run and --commit contradict each other; "
+              "pass --commit to emit, or neither to re-derive without emitting.")
+        return 2
+    pipe, ledger = build(outlets=args.commit)
     result = Rewind(pipe).run(generation=args.generation, limit=args.limit or None,
                               dry_run=not args.commit)
     head("rewind" + ("" if args.commit else " (dry run)"))
@@ -503,6 +507,11 @@ def main(argv: list[str] | None = None) -> int:
     rw.add_argument("--generation", type=int, default=1)
     rw.add_argument("--limit", type=int, default=0)
     rw.add_argument("--commit", action="store_true", help="emit, not just derive")
+    # Rewind is dry by default -- re-deriving history is safe, emitting it is
+    # the part worth being deliberate about. --dry-run is accepted so that the
+    # cautious spelling a person reaches for first is never an error.
+    rw.add_argument("--dry-run", action="store_true", dest="dry_run",
+                    help="re-derive without emitting (the default)")
 
     fo = sub.add_parser("forge", help="propose a grammar from sample lines")
     fo.set_defaults(fn=cmd_forge)
@@ -543,6 +552,12 @@ def main(argv: list[str] | None = None) -> int:
     except KeyboardInterrupt:
         print("\ninterrupted")
         return 130
+    except LedgerBusy as exc:
+        # The single-writer rule is architectural, so hitting it is a normal
+        # operator mistake -- usually "the console is still running" -- and
+        # deserves the message we wrote for it rather than a traceback.
+        print(f"\n{exc}\n")
+        return 3
 
 
 if __name__ == "__main__":
