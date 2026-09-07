@@ -1,0 +1,71 @@
+# Generic ArcSight CEF.
+# Family: cef. This covers an entire CLASS of vendors rather than one product:
+# any device that speaks CEF is onboarded by this single grammar, and its
+# vendor and product come off the wire. This is the "vendor-agnostic" claim
+# made concrete rather than asserted.
+id: generic.cef
+version: 2.0.0
+vendor: Generic
+product: CEF
+title: Generic CEF (any vendor)
+family: cef
+
+signature:
+  pattern: "CEF:\\d\\|"
+  weight: 0.93
+
+pipeline:
+  - syslog: auto
+    optional: true
+  - cef: true
+
+coerce:
+  spt: int
+  dpt: int
+  in: int
+  out: int
+
+# The payload carries no timestamp of its own, but the syslog envelope does --
+# and `log_time` is already extracted by the syslog step above. Discarding it
+# and falling back to receipt time would throw away the device's own view of
+# when the event happened, which is exactly the field an investigator needs to
+# reason about clock skew.
+clock:
+  field: log_time
+  formats: [bsd]
+  zone: UTC
+
+emit:
+  class: 4001
+  category: 4
+  const: {activity_id: 6}
+  fields:
+    # A generic grammar must report the REAL vendor and product,
+    # which the header carries. These override the grammar's own
+    # placeholder metadata, so a CEF event from Imperva says Imperva.
+    metadata.product.vendor_name: cef_vendor
+    metadata.product.name: cef_product
+    src_endpoint.ip: src
+    src_endpoint.port: spt
+    dst_endpoint.ip: dst
+    dst_endpoint.port: dpt
+    connection_info.protocol_name: proto
+    traffic.bytes_in: in
+    traffic.bytes_out: out
+    app_name: app
+    actor.user.name: suser
+    finding_info.title: cef_name
+    finding_info.uid: cef_signature_id
+    metadata.product.version: cef_device_version
+    device.hostname: dvchost
+  enums:
+    disposition_id:
+      source: act
+      table: {allow: 1, permit: 1, accept: 1, deny: 2, block: 2, drop: 3, reset: 8}
+      default: 99
+      keep: disposition_orig
+    severity_id:
+      source: cef_severity
+      table: {"0": 1, "1": 1, "2": 2, "3": 2, "4": 3, "5": 3, "6": 4, "7": 4, "8": 5, "9": 5, "10": 6}
+      default: 1
+      keep: severity_orig

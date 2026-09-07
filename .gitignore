@@ -1,0 +1,32 @@
+# ---- generated at runtime; reproducible with `strata demo` -------------------
+var/
+offline-bundle/
+wheelhouse/
+images/
+
+# ---- secrets ----------------------------------------------------------------
+.env
+*.pem
+*.key
+
+# ---- python -----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# ---- published by the Forge at runtime, not source --------------------------
+grammars/meridian.gateway.yaml
+
+# ---- build artefacts --------------------------------------------------------
+deck/*.jpg
+deck/*.png
+deck/*.pdf
+*.zip
+
+# ---- editors / OS -----------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store

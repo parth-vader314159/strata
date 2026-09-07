@@ -1,0 +1,53 @@
+# Check Point Security Gateway -- Log Exporter.
+# Family: kv, but with PIPE-separated pairs, not whitespace. The same shape as
+# FortiGate and a completely different vocabulary -- which is why "one grammar
+# per structural family" is about extraction, and mapping is still per product.
+id: checkpoint.firewall
+version: 2.0.0
+vendor: Check Point
+product: Security Gateway
+title: Check Point Firewall Log
+family: kv
+
+signature:
+  must: ["|origin="]
+  any: ["product=VPN-1", "|s_port=", "|service="]
+  weight: 0.95
+
+pipeline:
+  - syslog: auto
+    optional: true
+  - kv: true
+    pair_sep: "|"           # without this, values swallow every following pair
+
+coerce:
+  s_port: int
+  service: int
+  bytes: int
+
+clock:
+  field: time
+  formats: [epoch]
+  zone: UTC
+
+emit:
+  class: 4001
+  category: 4
+  const: {activity_id: 6, severity_id: 1}
+  fields:
+    src_endpoint.ip: src
+    src_endpoint.port: s_port
+    dst_endpoint.ip: dst
+    dst_endpoint.port: service
+    connection_info.protocol_name: proto
+    traffic.bytes: bytes
+    firewall_rule.name: rule_name
+    device.hostname: origin
+    app_name: appi_name
+    actor.user.name: user
+  enums:
+    disposition_id:
+      source: action
+      table: {accept: 1, allow: 1, drop: 3, reject: 2, block: 2, encrypt: 1, decrypt: 1}
+      default: 99
+      keep: disposition_orig

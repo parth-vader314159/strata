@@ -1,0 +1,49 @@
+# STRATA — single node.
+#
+# Two services sharing one data volume. There is deliberately NO message broker
+# here: at this scale the ledger already IS a durable, ordered, append-only log,
+# and a broker would be a second one plus a daemon to operate and air-gap. The
+# seam exists (Pipeline consumes an iterator) so a broker is an adapter, not a
+# rewrite — see docs/ARCHITECTURE.md.
+#
+# NOTE the ledger is single-writer by design. These two services must not both
+# write: the collector ingests, the console reads and forges. Each gets its own
+# shard directory.
+services:
+
+  console:
+    build: .
+    image: strata/ulpf:2.0.0
+    container_name: strata-console
+    command: ["python", "strata.py", "console", "--host", "0.0.0.0", "--port", "8400"]
+    ports: ["8400:8400"]
+    environment:
+      # Injected, never baked into the image. With no admin token the console
+      # announces "DEV — NO AUTH" in red rather than failing silently open.
+      STRATA_SECRET: "${STRATA_SECRET:?set STRATA_SECRET in .env}"
+      STRATA_ADMIN_TOKEN: "${STRATA_ADMIN_TOKEN:-}"
+    volumes:
+      - strata-var:/app/var
+      - ./grammars:/app/grammars      # hot-reloadable: edit a grammar, no rebuild
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+
+  collector:
+    build: .
+    image: strata/ulpf:2.0.0
+    container_name: strata-collector
+    command: ["python", "strata.py", "serve", "--udp", "5514", "--tcp", "5601"]
+    ports:
+      - "514:5514/udp"
+      - "601:5601"
+    environment:
+      STRATA_SECRET: "${STRATA_SECRET:?set STRATA_SECRET in .env}"
+    volumes:
+      - strata-collect:/app/var
+      - ./grammars:/app/grammars
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+
+volumes:
+  strata-var:
+  strata-collect:

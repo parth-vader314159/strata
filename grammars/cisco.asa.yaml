@@ -1,0 +1,91 @@
+# Cisco ASA -- connection messages.
+# Family: freeform. THE HARD CASE, and the reason the regex primitive exists:
+# the values sit inside an English sentence written for a human to read at 3am.
+# Everything painful about log normalization is visible in this one file.
+id: cisco.asa
+version: 2.0.0
+vendor: Cisco
+product: ASA
+title: Cisco ASA Connection Message
+family: freeform
+
+signature:
+  pattern: "%ASA-\\d-\\d{6}"
+  weight: 0.96
+
+pipeline:
+  - syslog: auto
+    optional: true
+  - regex: "%ASA-(?P<asa_severity>\\d)-(?P<asa_code>\\d{6}):\\s*(?P<asa_text>.*)$"
+    keep_body: true
+  - regex: "(?P<action>Built|Teardown|Deny|Denied|Dropped)\\s+(?P<direction>inbound|outbound)?\\s*(?P<protocol>TCP|UDP|ICMP)?"
+    source: asa_text
+    optional: true
+    keep_body: true
+
+  # ---------------------------------------------------------------------
+  # ENDPOINT ORDER IS NOT POSITIONAL. This is the subtle one.
+  #
+  # ASA writes "... for <iface>:<addr>/<port> ... to <iface>:<addr>/<port>".
+  # For an OUTBOUND connection the first endpoint is the OUTSIDE peer -- the
+  # destination -- and the second is the inside host that initiated it. For an
+  # inbound connection it is the other way round.
+  #
+  # Naming the captures by position therefore silently swaps source and
+  # destination on half the traffic. The parse succeeds, the OCSF validates,
+  # and every direction-based detection downstream is quietly inverted. Our
+  # own ground-truth test caught this; nothing else would have.
+  #
+  # The fix is two direction-specific patterns, each keyed on which interface
+  # word comes first. Both optional: whichever matches, wins.
+  # ---------------------------------------------------------------------
+  - regex: "for\\s+(?P<destination_zone>[\\w.-]+):(?P<destination_address>\\d+\\.\\d+\\.\\d+\\.\\d+)/(?P<destination_port>\\d+).*?\\bto\\s+(?P<source_zone>inside|dmz|[\\w.-]*inside[\\w.-]*):(?P<source_address>\\d+\\.\\d+\\.\\d+\\.\\d+)/(?P<source_port>\\d+)"
+    source: asa_text
+    optional: true
+    keep_body: true
+  - regex: "for\\s+(?P<source_zone>inside|dmz|[\\w.-]*inside[\\w.-]*):(?P<source_address>\\d+\\.\\d+\\.\\d+\\.\\d+)/(?P<source_port>\\d+).*?\\bto\\s+(?P<destination_zone>[\\w.-]+):(?P<destination_address>\\d+\\.\\d+\\.\\d+\\.\\d+)/(?P<destination_port>\\d+)"
+    source: asa_text
+    optional: true
+    keep_body: true
+
+coerce:
+  source_port: int
+  destination_port: int
+  asa_severity: int
+
+# The payload carries no timestamp of its own, but the syslog envelope does --
+# and `log_time` is already extracted by the syslog step above. Discarding it
+# and falling back to receipt time would throw away the device's own view of
+# when the event happened, which is exactly the field an investigator needs to
+# reason about clock skew.
+clock:
+  field: log_time
+  formats: [bsd]
+  zone: UTC
+
+emit:
+  class: 4001
+  category: 4
+  const: {activity_id: 6}
+  fields:
+    src_endpoint.ip: source_address
+    src_endpoint.port: source_port
+    src_endpoint.zone: source_zone
+    dst_endpoint.ip: destination_address
+    dst_endpoint.port: destination_port
+    dst_endpoint.zone: destination_zone
+    connection_info.protocol_name: protocol
+    connection_info.session_uid: session_id
+    device.hostname: log_host
+    metadata.event_code: asa_code
+  enums:
+    disposition_id:
+      source: action
+      table: {built: 1, teardown: 1, deny: 2, denied: 2, dropped: 3}
+      default: 99
+      keep: disposition_orig
+    severity_id:
+      source: asa_severity
+      table: {"0": 6, "1": 6, "2": 5, "3": 4, "4": 3, "5": 2, "6": 1, "7": 1}
+      default: 1
+      keep: severity_orig

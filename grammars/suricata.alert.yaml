@@ -1,0 +1,62 @@
+# Suricata IDS/IPS -- EVE JSON alerts.
+# Family: json. Already structured, so extraction is trivial and ALL the work
+# is in the mapping. The honest lesson: for a modern source, normalization is
+# a schema problem, not a parsing problem.
+# Note the different OCSF class -- a detection, not a traffic flow.
+id: suricata.alert
+version: 2.0.0
+vendor: OISF
+product: Suricata
+title: Suricata EVE Alert
+family: json
+
+signature:
+  # Regex, not a literal: shippers and pretty-printers re-serialize JSON with
+  # spaces, and a `"event_type":"alert"` literal silently stops matching the
+  # moment anything touches the document.
+  pattern: '"event_type"\s*:\s*"alert"'
+  weight: 0.98
+
+pipeline:
+  - json: true
+    flatten_sep: "."
+
+coerce:
+  src_port: int
+  dest_port: int
+  alert.severity: int
+  alert.signature_id: int
+
+clock:
+  field: timestamp
+  formats: [iso8601]
+  zone: UTC
+
+emit:
+  class: 2004                # Detection Finding
+  category: 2
+  const:
+    activity_id: 1
+  fields:
+    src_endpoint.ip: src_ip
+    src_endpoint.port: src_port
+    dst_endpoint.ip: dest_ip
+    dst_endpoint.port: dest_port
+    connection_info.protocol_name: proto
+    connection_info.uid: flow_id
+    finding_info.title: alert.signature
+    finding_info.uid: alert.signature_id
+    finding_info.types: alert.category
+    device.hostname: host
+    app_name: app_proto
+  enums:
+    severity_id:
+      source: alert.severity
+      table: {"1": 5, "2": 4, "3": 2, "4": 1}
+      default: 1
+      keep: severity_orig
+    disposition_id:
+      source: alert.action
+      table: {allowed: 1, blocked: 2, drop: 3}
+      default: 99
+      keep: disposition_orig

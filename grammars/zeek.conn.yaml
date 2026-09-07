@@ -1,0 +1,55 @@
+# Zeek -- conn.log in JSON mode.
+# Family: json. A second JSON source with a completely different vocabulary
+# from Suricata, which is the point: same extraction, different mapping.
+id: zeek.conn
+version: 2.0.0
+vendor: Zeek
+product: Zeek
+title: Zeek Connection Log
+family: json
+
+signature:
+  must: ['"id.orig_h"']
+  any: ['"conn_state"', '"orig_bytes"']
+  weight: 0.96
+
+pipeline:
+  - json: true
+    flatten_sep: "."
+
+coerce:
+  id.orig_p: int
+  id.resp_p: int
+  orig_bytes: int
+  resp_bytes: int
+  orig_pkts: int
+  resp_pkts: int
+  duration: float
+
+clock:
+  field: ts
+  formats: [epoch, iso8601]
+  zone: UTC
+
+emit:
+  class: 4001
+  category: 4
+  const: {activity_id: 6, severity_id: 1}
+  fields:
+    src_endpoint.ip: id.orig_h
+    src_endpoint.port: id.orig_p
+    dst_endpoint.ip: id.resp_h
+    dst_endpoint.port: id.resp_p
+    connection_info.protocol_name: proto
+    connection_info.uid: uid
+    traffic.bytes_out: orig_bytes
+    traffic.bytes_in: resp_bytes
+    traffic.packets: orig_pkts
+    app_name: service
+    duration: duration
+  enums:
+    disposition_id:
+      source: conn_state
+      table: {SF: 1, S1: 1, S0: 3, REJ: 2, RSTO: 8, RSTR: 8, OTH: 99}
+      default: 99
+      keep: disposition_orig
