@@ -158,7 +158,9 @@ is quarantined visibly.
   10  CONSOLE   REST API · provenance inspector · RBAC · audit log
 ```
 
-Module docstrings carry the detail. Design decisions:
+Module docstrings carry the detail. The full theory — every mechanism, why it
+works that way, and how you would rebuild it from an empty directory — is
+**[docs/HANDBOOK.md](docs/HANDBOOK.md)**. Decisions in brief:
 **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** ·
 threat model: **[docs/THREAT-MODEL.md](docs/THREAT-MODEL.md)**.
 

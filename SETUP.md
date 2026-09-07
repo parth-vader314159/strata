@@ -208,6 +208,7 @@ the network is impossible rather than merely unnecessary. Checklist:
 
 | You want to… | Read |
 |---|---|
+| Understand how the whole thing works | [docs/HANDBOOK.md](docs/HANDBOOK.md) |
 | Present this to judges | [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md) |
 | Verify the claims yourself | [docs/VERIFY.md](docs/VERIFY.md) |
 | Understand the design decisions | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
