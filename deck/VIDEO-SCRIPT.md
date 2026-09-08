@@ -5,14 +5,27 @@ no technical background understands the problem, the idea, and why it matters �
 while a judge who *does* know the field still hears something they haven't heard
 before.
 
-**Main cut: 2:00.** A 60-second cut is at the bottom if the rules turn out to be
-tighter.
+**Runs 1:57 at a normal speaking pace. 239 words.**
 
 > **No editing required.** [`video/visuals.html`](video/) is the entire visual
-> track, already built — open it, press `F` then `A`, read the script aloud, and
-> screen-record it in one take. The "On screen" column below describes what that
-> page shows you; you do not have to make any of it. See
-> [`video/README.md`](video/README.md).
+> track. Open it, press `F` then `A`, read this aloud, screen-record once.
+> Setup and keys: [`video/README.md`](video/README.md).
+
+---
+
+## How the timing works — read this once
+
+The reel advances **one phrase at a time**, and each phrase is held for exactly
+as long as it takes to say it — its own word count at your speaking rate. It is
+not a slideshow on a fixed clock, so a visual can never be ten seconds adrift
+from the words that go with it.
+
+Your rate is adjustable **while it runs**: `[` slows everything down, `]` speeds
+it up, in 5-word-per-minute steps. Default is 145.
+
+**So don't try to match the reel. Make the reel match you.** Rehearse once at
+145, and if you were rushing to keep up, press `[` three times and go again.
+That single habit is what makes it feel seamless.
 
 ---
 
@@ -23,78 +36,125 @@ absorb a pipeline diagram, and a judge does not need one — that's what the dec
 is for. The video has exactly one job: make the audience *feel* the problem in
 the first twenty seconds, then show them you solved it.
 
-Everything below is built around that.
-
 ---
 
-## The 2-minute script
+## The script
 
-| Time | Voiceover | On screen |
-|---|---|---|
-| **0:00–0:20** | Imagine four people witness the same incident. Each one speaks a different language. A translator listens to all four, writes one short summary of each — and then throws the original statements away. *(beat)* Months later, an investigator needs one small detail. It wasn't in the summary. It's gone. | Beat 2 — four witness statements appear one by one in four languages, a small summary card forms, and the four originals grey out and drop away. |
-| **0:20–0:42** | This is not a story. It's what happens inside every large computer network, a billion times a day. Every firewall, every router, every security device writes down what it saw — each in its own format. Software translates them so a security team can search them. And the originals are deleted. | Beats 3–4 — the same four log lines for real (Palo Alto, FortiGate, Suricata, Cisco ASA), one IP highlighted in each to show it sits in a different place every time. Then black: "And the originals are deleted." |
-| **0:42–0:52** | So when a new kind of attack appears, and an investigator needs a detail nobody thought to keep — it's already gone. *(beat)* We built the translator that never throws anything away. | Beat 5 — the STRATA card. |
-| **0:52–1:10** | STRATA reads any security device's format and rewrites it into one common language — so for the first time, everything can be searched together. | Beat 6 — the console overview, live counters and pipeline filled. |
-| **1:10–1:26** | But it keeps every original too. Every byte, exactly as it arrived. And it can prove — mathematically — that a single record has not been altered, without revealing anything about any other record. | Beats 7–8 — the provenance inspector (original bytes, every value highlighted and linked to its OCSF field), then the integrity page reading 100.0000%. |
-| **1:26–1:40** | Which means if we ever translate something wrongly, we can fix it — and re-translate the entire past. No other tool can do that, because no other tool kept the originals. | Beat 9 — `strata rewind`: 20,000 replayed, 20,000 re-derived, 0 quarantined, 0 bytes written. |
-| **1:40–1:52** | And when a device nobody has ever seen starts sending logs, STRATA studies it and writes its own translator — in milliseconds, instead of the days an engineer would take. | Beat 10 — `strata forge`: structure detected, 8 fields found, 7 mapped, published with no restart. |
-| **1:52–2:00** | Over eleven thousand events a second. More than a billion a day. On one ordinary machine, completely offline. *(beat)* STRATA. Nothing is translated away. | Beats 11–12 — the three numbers, then the end card. Hold it three seconds before you stop recording. |
+Timings are where each line **starts** if you read at 145 wpm. The first three
+seconds are the silent title card — **do not speak over it.** Start on "Four
+people".
 
-**Word count: ~300.** That is about 2:05 at a natural pace. If you run long, the
-first thing to cut is the second sentence of the 1:26 block.
+| Starts | Say |
+|---|---|
+| **0:03** | Four people see the same accident. Each of them describes it differently. |
+| **0:09** | So a translator writes one short summary of each — and throws the original statements away. |
+| **0:16** | Months later, an investigator needs one detail that was never in the summary. |
+| **0:22** | It's gone. |
+| **0:24** | This is not a story. It is what happens inside every large network on earth, a billion times a day. |
+| **0:32** | Every firewall, every router, every security device writes down what it saw. |
+| **0:38** | Each one in its own language. |
+| **0:41** | Software translates them so a security team can search them. And the originals are deleted. |
+| **0:48** | We built the translator that never throws anything away. |
+| **0:53** | STRATA reads any device's format and rewrites it into one common language, |
+| **0:58** | so for the first time, everything can be searched together. |
+| **1:02** | But it keeps every original too. Every byte, exactly as it arrived. |
+| **1:08** | Every value you see here is linked to the exact characters it came from. |
+| **1:14** | And it can prove nothing was altered — one record at a time, without revealing any other. |
+| **1:22** | So when we get a translation wrong, we fix it, |
+| **1:26** | and re-translate the entire past. |
+| **1:29** | No other tool can. No other tool kept the originals. |
+| **1:34** | And when a device nobody has ever seen starts sending logs, |
+| **1:39** | STRATA studies it |
+| **1:40** | and writes its own translator. Milliseconds, not engineer-days. |
+| **1:44** | Eleven thousand events a second. More than a billion a day. On one ordinary machine, completely offline. |
+| **1:52** | STRATA. Nothing is translated away. |
+
+Hold the end card three seconds, then stop recording.
 
 ---
 
 ## Clean read
 
-Record from this, not the table. `//` marks a pause — take it, they carry more
-weight than the words.
+Record from this — the table is for reference, not for reading off. `//` marks a
+pause. **Take the pauses.** They carry more weight than the words, and the reel
+has already budgeted time for them.
 
-> Imagine four people witness the same incident. Each one speaks a different
-> language. A translator listens to all four, writes one short summary of each —
-> and then throws the original statements away. //
+> *(silent — title card. Breathe. Start on the witnesses.)*
 >
-> Months later, an investigator needs one small detail. It wasn't in the
-> summary. It's gone. //
+> Four people see the same accident. Each of them describes it differently. //
 >
-> This is not a story. It's what happens inside every large computer network, a
-> billion times a day.
+> So a translator writes one short summary of each — and throws the original
+> statements away. //
 >
-> Every firewall, every router, every security device writes down what it saw —
-> each in its own format. Software translates them so a security team can search
-> them. And the originals are deleted. //
+> Months later, an investigator needs one detail that was never in the summary.
+> //
 >
-> So when a new kind of attack appears, and an investigator needs a detail
-> nobody thought to keep — it's already gone. //
+> **It's gone.** //
+>
+> This is not a story. It is what happens inside every large network on earth, a
+> billion times a day. //
+>
+> Every firewall, every router, every security device writes down what it saw.
+> Each one in its own language. //
+>
+> Software translates them so a security team can search them. And the originals
+> are deleted. //
 >
 > We built the translator that never throws anything away. //
 >
-> STRATA reads any security device's format and rewrites it into one common
-> language — so for the first time, everything can be searched together.
+> STRATA reads any device's format and rewrites it into one common language, so
+> for the first time, everything can be searched together. //
 >
-> But it keeps every original too. Every byte, exactly as it arrived. And it can
-> prove — mathematically — that a single record has not been altered, without
-> revealing anything about any other record. //
+> But it keeps every original too. Every byte, exactly as it arrived. Every value
+> you see here is linked to the exact characters it came from. //
 >
-> Which means if we ever translate something wrongly, we can fix it — and
-> re-translate the entire past. No other tool can do that, because no other tool
-> kept the originals. //
+> And it can prove nothing was altered — one record at a time, without revealing
+> any other. //
+>
+> So when we get a translation wrong, we fix it, and re-translate the entire
+> past. // No other tool can. No other tool kept the originals. //
 >
 > And when a device nobody has ever seen starts sending logs, STRATA studies it
-> and writes its own translator — in milliseconds, instead of the days an
-> engineer would take. //
+> and writes its own translator. Milliseconds, not engineer-days. //
 >
-> Over eleven thousand events a second. More than a billion a day. On one
-> ordinary machine, completely offline. //
+> Eleven thousand events a second. More than a billion a day. On one ordinary
+> machine, completely offline. //
 >
-> STRATA. Nothing is translated away.
+> **STRATA. Nothing is translated away.**
+
+---
+
+## What you'll see, phrase by phrase
+
+You don't have to build any of this — the reel does it. It's here so you know
+what's coming and can time your emphasis to it.
+
+| When you say | The screen does |
+|---|---|
+| "Four people see the same accident" | Four witness statements land one at a time, in four languages |
+| "throws the original statements away" | The four cards grey out, blur and fall; the summary settles into centre |
+| "one detail that was never in the summary" | The summary shakes and a red line appears: *not recorded* |
+| "It's gone." | Hard cut to black |
+| "a billion times a day" | **1,000,000,000** counts up from zero |
+| "writes down what it saw" | Four real log lines slide in |
+| "Each one in its own language" | The same IP address ignites in all four — in a different position each time |
+| "the originals are deleted" | The lines desaturate and blur away |
+| "never throws anything away" | The STRATA wordmark builds letter by letter out of blur |
+| "one common language" | The live console |
+| "linked to the exact characters" | **The best shot in the video** — curves draw from the raw bytes down to the OCSF fields they became, one after another |
+| "prove nothing was altered" | **100.0000%** counts up over the integrity page |
+| "re-translate the entire past" | `strata rewind` — the counters run to 20,000 |
+| "writes its own translator" | The forge output types itself out, line by line |
+| "Eleven thousand events a second" | The number counts up |
+| "Nothing is translated away." | End card |
 
 ---
 
 ## The 60-second cut
 
-If the limit turns out to be one minute, cut to this — don't speed-read the long
-one. ~125 words, which is about 52 seconds of speech plus room for the pauses.
+If the limit turns out to be one minute, use this — don't speed-read the long
+one. ~125 words, about 52 seconds plus pauses. Tap `Space` to advance manually;
+the phrase timings won't match, so turn autoplay off for this version.
 
 > Imagine four witnesses to one incident, each speaking a different language. A
 > translator writes a short summary of each — then throws the originals away.
@@ -119,74 +179,46 @@ one. ~125 words, which is about 52 seconds of speech plus room for the pauses.
 
 ## Recording notes
 
-**Voice.** Slower than feels natural — roughly 145 words per minute. The most
-common mistake in hackathon videos is rushing, and it reads as nervousness.
-Record your voice and the screen together in one pass; separate audio has to be
-synced afterwards, and syncing is editing.
+**Voice.** Slower than feels natural. Record your voice and the screen together
+in one pass — separate audio has to be synced afterwards, and syncing is
+editing.
 
-**Screen capture.** 1080p minimum. Maximise the browser window. Close
-notifications, other tabs and the bookmarks bar before you start — a popup
-mid-take means a retake.
+**Find your rate first.** Read the clean read aloud once with a stopwatch. Under
+1:50 means you're fast — press `]`. Over 2:05 means press `[`. Do this *before*
+you record and the whole problem disappears.
 
-**You do not need to demo live.** The reel already contains the console
-screenshots and the command output, so there is no alt-tabbing, nothing to wait
-for, and no risk of something failing on camera. Everything is one browser tab.
+**Screen capture.** 1080p minimum, browser maximised. Close notifications, other
+tabs and the bookmarks bar — a popup mid-take means a retake.
 
-**Rehearse twice with cue cards on** (`N` in the reel), then turn them off and
-record. Do not leave them on — the cue strip is part of the page and will
-appear in your recording.
+**Rehearse twice with cue cards on** (`N` shows the line you should be saying,
+the next one, a clock and your current wpm). Then press `N` again to turn them
+off. **They are part of the page and will appear in your recording if you leave
+them on.**
 
 **Do not say:** OCSF, Merkle tree, content-addressed, normalization, grammar,
-triage, schema. Every one of those is in the deck, where it belongs. Put OCSF
-and "Merkle-sealed" on screen as small captions if you want the judge to see
-you know the terms — but don't spend voiceover on them.
+triage, schema. Every one of those is in the deck, where it belongs.
 
-**Do say** the numbers out loud. "Eleven thousand a second" and "a hundred
+**Do say the numbers out loud.** "Eleven thousand a second" and "a hundred
 percent" land; a number that only appears on screen doesn't.
-
----
-
-## Title and end cards
-
-**Opening card (2 seconds, before the voiceover starts):**
-
-```
-Smart India Hackathon
-Universal Log Pre-processing Framework
-```
-
-**End card (hold 3 seconds):**
-
-```
-STRATA
-Nothing is translated away.
-
-Team <name> · <college>
-```
-
-Check your submission rules — some rounds require the team name and problem
-statement ID on screen. If they do, put the ID on the opening card.
 
 ---
 
 ## Why the script is built this way
 
-Worth knowing, in case you want to rewrite it.
+Worth knowing if you want to rewrite it.
 
-**The analogy is doing all the work.** Witnesses → devices, statements → logs,
+**The analogy does all the work.** Witnesses → devices, statements → logs,
 translator → parser, summary → normalized event, thrown-away originals → the
-discard, investigator → analyst. It maps one-to-one onto the real problem, which
-means every later sentence lands without further explanation.
+discard, investigator → analyst. One-to-one, so every later sentence lands
+without further explanation.
 
-**The problem gets 40% of the runtime.** That feels wrong and is correct. A
-judge who doesn't feel the problem will not care about the solution, however
-good it is. Most hackathon videos invert this ratio and spend ninety seconds on
-features nobody has been given a reason to want.
+**The problem gets 40% of the runtime.** That feels wrong and is correct. Most
+hackathon videos invert this and spend ninety seconds on features nobody has
+been given a reason to want.
 
 **Rewind is the emotional peak, not the throughput number.** "We can fix the
 past" is a claim a non-technical person can evaluate and be impressed by.
-"11,440 events per second" is a claim they have to take on trust. Lead with the
-one they can judge for themselves.
+"11,440 events per second" is one they have to take on trust.
 
 **The last line answers the first.** The video opens with something being thrown
 away and closes with "nothing is translated away." That symmetry is why the
