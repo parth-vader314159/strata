@@ -13,7 +13,7 @@ Re-capture the screenshots first if the console has changed:
 
 Then:
 
-    python3 deck/video/build_visuals.py --team "Team Name" --college "College"
+    python3 deck/video/build_visuals.py
 """
 
 from __future__ import annotations
@@ -57,10 +57,7 @@ def encode(path: Path) -> str:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--team", default="STRATA")
-    ap.add_argument("--college", default="")
-    args = ap.parse_args()
+    argparse.ArgumentParser().parse_args()
 
     if not TEMPLATE.exists():
         print(f"missing template: {TEMPLATE}")
@@ -77,10 +74,6 @@ def main() -> int:
 
     for token, name in IMAGES.items():
         html = html.replace(token, encode(SHOTS / name))
-
-    html = html.replace("__TEAM__", args.team)
-    html = html.replace(" · __COLLEGE__" if not args.college else "__COLLEGE__",
-                        "" if not args.college else args.college)
 
     OUT.write_text(html, encoding="utf-8")
     print(f"wrote {OUT}  ({OUT.stat().st_size/1_000_000:.1f} MB)")

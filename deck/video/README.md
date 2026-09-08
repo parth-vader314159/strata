@@ -99,7 +99,7 @@ Only needed if the console UI changes or you want different screenshots.
 ```bash
 python3 strata.py console            # terminal 1
 python3 deck/video/capture.py        # terminal 2 — writes shots/
-python3 deck/video/build_visuals.py --team "Your Team" --college "Your College"
+python3 deck/video/build_visuals.py
 ```
 
 `capture.py` needs Playwright (`pip install playwright && playwright install
@@ -107,18 +107,15 @@ chromium`). If you'd rather not install it, take the three screenshots by hand
 and save them as `shots/overview.png`, `shots/inspector.png`,
 `shots/integrity.png` — `build_visuals.py` doesn't care how they got there.
 
-`--team` and `--college` fill in the end card. Run it once with your real team
-name before you record.
-
 ---
 
 ## Files
 
 | | |
 |---|---|
-| `visuals.html` | **the one you open.** Self-contained, ~1.3 MB |
+| `visuals.html` | **the one you open.** Self-contained, ~0.8 MB |
 | `visuals.template.html` | source, before screenshots are inlined |
-| `build_visuals.py` | inlines the screenshots, fills the end card |
+| `build_visuals.py` | inlines the screenshots into the template |
 | `capture.py` | re-captures the three console screenshots |
 | `shots/` | the screenshots currently baked in |
 
