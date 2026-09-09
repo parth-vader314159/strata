@@ -627,12 +627,16 @@ function startClock(){
     bar.style.width = Math.min(100, s / totalTime() * 100) + '%';
   }, 200);
 }
-function toggleAuto(){
-  auto = !auto;
-  if (auto){ startClock(); bar.classList.add('on'); schedule(); }
-  else clearTimeout(timer);
-  $('clock').style.color = auto ? '#FF7A33' : '#ECECE9';
+function startAuto(){
+  auto = true; startClock(); schedule();
+  $('clock').style.color = '#FF7A33';
 }
+function toggleAuto(){
+  if (auto){ auto = false; clearTimeout(timer); $('clock').style.color = '#ECECE9'; }
+  else startAuto();
+}
+/* back to the top and straight into playing again */
+function restart(){ resetAll(); requestAnimationFrame(startAuto); }
 function resetAll(){
   clearTimeout(timer); clearInterval(tick); tick = null; auto = false;
   bar.style.width = 0; $('clock').textContent = '0:00';
@@ -654,18 +658,24 @@ addEventListener('keydown', e => {
   else if (k === 'n'){ aids.classList.toggle('on'); document.body.classList.toggle('showcursor'); }
   else if (k === 'h') help.classList.toggle('on');
   else if (k === 'b') bar.classList.toggle('on');
-  else if (k === 'r') resetAll();
+  else if (k === 'r') restart();
   else if (k === '[') { wpm = Math.max(105, wpm - 5); apply(); }
   else if (k === ']') { wpm = Math.min(190, wpm + 5); apply(); }
   else if (k === 'f') document.fullscreenElement
       ? document.exitFullscreen() : document.documentElement.requestFullscreen();
 });
-addEventListener('click', () => { clearTimeout(timer); go(i + 1); });
 addEventListener('resize', () => { if (CUES[i][0] === 7 && CUES[i][1] >= 1) drawWires(); });
 
+/* Entering fullscreen restarts from the top, so the usual flow —
+   open the file, press F, let it run — begins cleanly rather than
+   part-way through. Browsers refuse programmatic fullscreen without a
+   gesture, which is the one key this page cannot press for you. */
+document.addEventListener('fullscreenchange', () => {
+  if (document.fullscreenElement) restart();
+});
+
 apply();
-setTimeout(() => help.classList.add('on'), 200);
-setTimeout(() => help.classList.remove('on'), 7000);
+startAuto();
 </script>
 </body>
 </html>

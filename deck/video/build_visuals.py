@@ -77,7 +77,7 @@ def main() -> int:
 
     OUT.write_text(html, encoding="utf-8")
     print(f"wrote {OUT}  ({OUT.stat().st_size/1_000_000:.1f} MB)")
-    print("open it, press F for fullscreen, A to autoplay, N for cue cards")
+    print("open it — it plays itself. F for fullscreen (restarts), N for cue cards")
     return 0
 
 

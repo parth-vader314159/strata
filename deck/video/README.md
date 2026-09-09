@@ -1,8 +1,9 @@
 # The video, with no editing
 
 `visuals.html` is the entire visual track of the submission video — 23 animated
-beats with the real console screenshots inside it. You open it, press two keys,
-read the script aloud, and screen-record the result.
+beats with the real console screenshots inside it. **It starts playing the
+moment you open it and runs to the end on its own.** Nothing to press, nothing
+that waits for you. You open it, read the script aloud, and screen-record.
 
 **There is nothing to cut together afterwards.** That is the whole point.
 
@@ -18,26 +19,23 @@ reel down, `]` speeds it up, live, while it runs.
 **1. Open it.** Double-click `visuals.html`. Any browser. No server, no
 internet — it is one self-contained file.
 
-**2. Press `F`** for fullscreen. Press **`H`** to dismiss the key hints.
-
-**3. Start your screen recorder.** Record the whole screen.
+**2. Start your screen recorder.** Record the whole screen.
 
 - Windows — `Win + G` (Xbox Game Bar), or OBS
 - macOS — `Cmd + Shift + 5`, "Record Entire Screen"
 - Anything — OBS Studio, free
 
-**4. Press `A`.** The slides now advance themselves, on the script's timings.
-Your hands are free.
+**3. Press `F` for fullscreen — this also restarts the reel from the top,** so
+you get a clean opening rather than joining part-way through. It is the only key
+in the whole process, and only because browsers refuse to go fullscreen without
+a real keypress. If you're happy recording the browser window as-is, skip it and
+just reload the page instead.
 
-**5. Read the script.** From [`../VIDEO-SCRIPT.md`](../VIDEO-SCRIPT.md), on
+**4. Read the script.** From [`../VIDEO-SCRIPT.md`](../VIDEO-SCRIPT.md), on
 your phone or a printout. Start speaking when the four witnesses appear — the
 opening card is deliberately silent.
 
-**Set your pace first.** Read the clean read aloud once against a stopwatch. If
-you finish under 1:50 you're fast — press `]` a few times. Over 2:05, press `[`.
-Doing this before you record is what makes the take feel locked.
-
-**6. Stop recording** three seconds after the final card.
+**5. Stop recording** three seconds after the final card.
 
 Done. Trim the dead air off each end in whatever app you already have, and
 that is the video.
@@ -46,37 +44,41 @@ that is the video.
 
 ## Keys
 
+You don't need any of these. The reel plays itself. They're here for rehearsal.
+
 | Key | Does |
 |---|---|
-| `A` | **autoplay** — advances on the script's own phrase timings. The one you want. |
+| `F` | fullscreen — **and restarts from the top** |
+| `R` | restart and play again |
+| `A` | pause / resume the automatic advance |
 | `[` / `]` | **slower / faster** — shifts your speaking rate by 5 wpm. Live. |
 | `Space` / `→` | next phrase by hand |
 | `←` | back |
 | `N` | **cue cards** — the line you're saying, the next one, a clock and your current wpm |
-| `R` | restart from the beginning |
-| `F` | fullscreen |
 | `H` | show/hide the key hints |
 | `B` | show/hide the progress bar |
 
-**`N` is for rehearsal, not for recording.** The cue strip is part of the page,
-so it *will* appear in your recording if you leave it on. Rehearse with it,
-press `N` again before you hit record. Same for `H` and `B`.
+**Nothing is shown over the reel by default** — no key hints, no progress bar,
+no cue cards. They only appear if you turn them on, so a straight recording is
+always clean.
 
-Autoplay and the cue cards are independent — you can rehearse with cue cards
-on and autoplay off, tapping `Space` when you're ready, until the timings feel
-right.
+**`N` is for rehearsal, not for recording.** The cue strip is part of the page,
+so it *will* appear in your recording if you leave it on. Press `N` again before
+you hit record. Same for `H` and `B`.
 
 ---
 
 ## If you drift off the timings
 
-Tap `Space` to jump forward, or `←` to go back — autoplay picks up from wherever
-you land. You do not need to restart.
+Don't chase it mid-take — that is what makes a video look out of sync. Stop,
+change the reel's pace, start over. A retake costs two minutes.
 
-If you find yourself consistently *ahead* of the reel, you're reading fast: stop,
-press `[` two or three times, and go again. Consistently behind, press `]`.
-Chasing the reel mid-take is what makes a video look out of sync; changing its
-rate to match yours is the fix.
+Consistently *ahead* of the reel means you're reading fast: press `[` two or
+three times to slow the whole thing down. Consistently behind, press `]`. Then
+press `R` and go again.
+
+Best done before you ever hit record: read the clean read aloud once against a
+stopwatch. Under 1:50 → press `]`. Over 2:05 → press `[`.
 
 ---
 

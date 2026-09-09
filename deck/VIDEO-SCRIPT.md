@@ -8,8 +8,9 @@ before.
 **Runs 1:57 at a normal speaking pace. 239 words.**
 
 > **No editing required.** [`video/visuals.html`](video/) is the entire visual
-> track. Open it, press `F` then `A`, read this aloud, screen-record once.
-> Setup and keys: [`video/README.md`](video/README.md).
+> track, and it plays itself the moment you open it — nothing to press. Read
+> this aloud over it and screen-record once.
+> Setup: [`video/README.md`](video/README.md).
 
 ---
 
