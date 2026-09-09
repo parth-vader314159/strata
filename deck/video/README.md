@@ -1,5 +1,11 @@
 # The video, with no editing
 
+**`STRATA-demo.mp4` is the finished visual track** — 1920×1080, 1:56, silent.
+If you just want a file to submit or to lay a voiceover over, that's it; the
+rest of this page is about producing it yourself.
+
+---
+
 `visuals.html` is the entire visual track of the submission video — 23 animated
 beats with the real console screenshots inside it. **It starts playing the
 moment you open it and runs to the end on its own.** Nothing to press, nothing
@@ -94,6 +100,37 @@ stopwatch. Under 1:50 → press `]`. Over 2:05 → press `[`.
 
 ---
 
+## Adding your voice
+
+The mp4 has no audio. Two ways to finish it:
+
+**Record over it.** Open `visuals.html` and read the script aloud while your
+screen recorder captures both — that's the original workflow, and it gives you
+picture and voice in one pass with nothing to sync.
+
+**Or narrate the mp4.** Drop `STRATA-demo.mp4` into iMovie, Clipchamp, DaVinci
+Resolve or CapCut, hit record on the voiceover track, and read to the picture.
+Every beat lands within about a second of the timings in
+[`../VIDEO-SCRIPT.md`](../VIDEO-SCRIPT.md), so the table there doubles as your
+cue sheet.
+
+Do not use a synthetic voice. A real one — accent and all — reads as a team
+that built something; text-to-speech reads as a team that didn't turn up.
+
+---
+
+## Re-rendering the mp4
+
+```bash
+node deck/video/render.js
+```
+
+Three minutes. It plays the reel once in real time while recording, measures how
+long that actually took, corrects the encoder's stretched timestamps by that
+ratio, and encodes H.264. Needs `playwright` and `ffmpeg`.
+
+---
+
 ## Rebuilding the page
 
 Only needed if the console UI changes or you want different screenshots.
@@ -115,7 +152,9 @@ and save them as `shots/overview.png`, `shots/inspector.png`,
 
 | | |
 |---|---|
+| `STRATA-demo.mp4` | **the rendered video.** 1920×1080, 1:56, silent, 5.7 MB |
 | `visuals.html` | **the one you open.** Self-contained, ~0.8 MB |
+| `render.js` | records visuals.html and encodes the mp4 |
 | `visuals.template.html` | source, before screenshots are inlined |
 | `build_visuals.py` | inlines the screenshots into the template |
 | `capture.py` | re-captures the three console screenshots |

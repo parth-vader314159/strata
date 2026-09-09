@@ -202,8 +202,14 @@ h2{font-size:clamp(26px,4vw,64px);font-weight:700;letter-spacing:0;line-height:1
   box-shadow:0 30px 84px rgba(20,21,26,.18);overflow:hidden;background:#fff;
 }
 .shot img{display:block;max-width:100%;max-height:70vh;width:auto;height:auto}
-/* slow drift so nothing is ever frozen on screen */
-.scene.on .shot img{animation:drift 30s ease-in-out infinite alternate}
+/* slow drift so nothing is ever frozen on screen. will-change promotes the
+   image to its own compositor layer, so the drift does not force a repaint of
+   the whole scene every frame — which matters a lot when rendering to video
+   on a machine with no GPU. */
+.scene.on .shot img{
+  animation:drift 30s ease-in-out infinite alternate;
+  will-change:transform;backface-visibility:hidden;
+}
 @keyframes drift{
   from{transform:scale(1.005) translate3d(0,0,0)}
   to{transform:scale(1.055) translate3d(-1.1%,-1.4%,0)}

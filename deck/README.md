@@ -3,7 +3,8 @@
 `STRATA-SIH-Deck.pptx` — 15 slides, speaker notes on every one.
 `STRATA-SIH-Deck.pdf` — the same deck as a handout / projector fallback.
 `VIDEO-SCRIPT.md` — script and recording notes for the submission video.
-`video/` — the visual track as one self-contained page. Open it and it plays itself. No editing.
+`video/STRATA-demo.mp4` — the finished visual track, 1080p, 1:56, silent.
+`video/` — the same thing as a self-contained page that plays itself, plus the renderer.
 
 Rebuild after editing `build_deck.js`:
 
