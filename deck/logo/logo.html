@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>STRATA — logo animation</title>
+<style>
+:root{
+  --paper:#FAFAF9; --ink:#14151A; --ink-2:#494D56; --faint:#8B909A;
+  --signal:#D9500C; --signal-ink:#B23F06;
+  --dark:#0F1012; --dark-ink:#ECECE9; --dark-muted:#9AA0A9; --dark-rule:#2A2C31;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--dark)}
+body{cursor:none}
+body.paper{background:var(--paper)}
+canvas{display:block;width:100vw;height:100vh}
+#hint{
+  position:fixed;left:0;right:0;bottom:0;padding:12px 22px;z-index:9;
+  font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color:#787D86;background:rgba(15,16,18,.9);display:none;
+}
+#hint.on{display:block}
+#hint b{color:#FF7A33}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hint">
+  <b>R</b> replay &nbsp;·&nbsp; <b>L</b> loop &nbsp;·&nbsp; <b>T</b> light / dark
+  &nbsp;·&nbsp; <b>H</b> hide this
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   STRATA — logo animation
+
+   The mark is the product's own argument, compressed into eight seconds:
+
+     1  CHAOS      fragments of a dozen vendor log formats, scattered,
+                   drifting, unreadable as a set
+     2  STRATA     they settle into ordered horizontal layers — one
+                   vocabulary, nothing discarded, just laid down
+     3  COMPACT    the layers compress the way sediment does
+     4  FOLD       they hash pairwise upward, 8 → 4 → 2 → 1, a Merkle
+                   tree building itself
+     5  ROOT       the single remaining node IS the mark
+     6  LOCKUP     wordmark, then ULPF, then the line
+
+   Everything is drawn to one canvas at a fixed internal 1920×1080 and
+   scaled to fit, so it records identically at any window size.
+   ═══════════════════════════════════════════════════════════════════ */
+
+const W = 1920, H = 1080;
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+
+const SANS = 'system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+const MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace';
+
+let dark = true;
+const C = () => dark
+  ? { bg:'#0F1012', ink:'#ECECE9', dim:'#9AA0A9', faint:'#5A5F67',
+      rule:'#2A2C31', signal:'#FF7A33' }
+  : { bg:'#FAFAF9', ink:'#14151A', dim:'#494D56', faint:'#B4B8BF',
+      rule:'#E2E1DC', signal:'#D9500C' };
+
+/* ── timeline ────────────────────────────────────────────────────── */
+const T = {
+  chaosIn:   [0.30, 1.45],
+  settle:    [1.45, 2.80],
+  compact:   [2.80, 3.60],
+  fold:      [3.92, 5.60],   // 0.56s per merge — slow enough to read
+  root:      [5.55, 6.10],
+  wordmark:  [6.05, 7.00],
+  rule:      [6.90, 7.40],
+  ulpf:      [7.20, 7.90],
+  tagline:   [7.80, 8.50],
+  hold:      [8.50, 10.8],
+};
+const END = T.hold[1];
+
+const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
+const seg   = (t,[a,b]) => clamp((t-a)/(b-a), 0, 1);
+const outCubic = p => 1 - Math.pow(1-p, 3);
+const outQuint = p => 1 - Math.pow(1-p, 5);
+const inOut = p => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p+2, 3)/2;
+const outBack = p => { const c=1.9; return 1 + (c+1)*Math.pow(p-1,3) + c*Math.pow(p-1,2); };
+
+/* ── the fragments: real shapes from real vendors ────────────────── */
+const VOCAB = [
+  'srcip=10.10.4.55','dstport=443','action="deny"','devname="FG201F"',
+  '"src_ip":"10.0.6.31"','"dest_port":22','{"timestamp":','TRAFFIC,end',
+  '1,2026/08/26','0142,vsys1','CEF:0|Vendor|','|cs1Label=','LEEF:2.0|',
+  'proto=6','%ASA-6-106023','outside:203.0.113.42','inside:10.4.2.9',
+  'policyid=1047','sessionid=88213','id=firewall','sport=49832',
+  'conn.log','duration=0.41','orig_bytes=812','S0','RSTO',
+  'squid[1841]:','TCP_MISS/200','filterlog:','block,in,4,0x0',
+  'sentbyte=23926','rcvdpkt=94','level="notice"','subtype=forward',
+  'app=ms-rdp','service=HTTPS','tranđisp=snat'.replace('đ','d'),
+  'alert','severity=3','dvc=192.0.2.8','rt=1787742798',
+];
+const ROWS = 8;
+const frag = [];
+
+function layout(){
+  frag.length = 0;
+  ctx.font = `500 21px ${MONO}`;
+  const rowGap = 62, gap = 26;
+  const baseY = H/2 - ((ROWS-1) * rowGap)/2;
+
+  for (let r = 0; r < ROWS; r++){
+    // build a row of fragments, then centre it
+    const picks = [];
+    let total = 0;
+    // deterministic-ish spread so every row differs but nothing overflows
+    let guard = 0;
+    while (total < 1180 && guard++ < 40){
+      const txt = VOCAB[(r*7 + picks.length*3 + guard) % VOCAB.length];
+      const w = ctx.measureText(txt).width;
+      if (total + w + gap > 1320) break;
+      picks.push({ txt, w });
+      total += w + gap;
+    }
+    let x = (W - (total - gap))/2;
+    for (const p of picks){
+      const a = Math.random() * Math.PI * 2;
+      const rad = 430 + Math.random() * 430;
+      frag.push({
+        txt: p.txt,
+        tx: x + p.w/2,                       // settled centre
+        ty: baseY + r * rowGap,
+        cx: W/2 + Math.cos(a) * rad * 1.30,  // chaos origin
+        cy: H/2 + Math.sin(a) * rad * 0.80,
+        rot: (Math.random()-.5) * 1.5,
+        scl: 0.72 + Math.random() * 0.9,
+        row: r,
+        w: p.w,
+        hot: Math.random() < 0.13,           // a few glow signal-orange
+        d: r * 0.055 + Math.random() * 0.10,  // rows land bottom-up
+      });
+      x += p.w + gap;
+    }
+  }
+}
+
+/* ── merkle tree geometry ────────────────────────────────────────── */
+/* Each settled layer hashes down to one leaf. Eight leaves sit in a row
+   along the bottom; pairs rise and merge three times, 8 → 4 → 2 → 1, and
+   the root lands exactly where the mark belongs. Levels are laid out so
+   a parent is always the midpoint of its two children, which is what
+   makes the connectors read as a tree rather than as sliding bars. */
+const ROW_GAP = 62;
+const BASE_Y  = H/2 - ((ROWS-1) * ROW_GAP)/2;
+const MARK_Y  = H/2 - 156;          // where the root — and the mark — sits
+const LEVEL_H = 132;
+const LEAF_Y  = MARK_Y + 3 * LEVEL_H;
+const LEAF_SPAN = 1280;
+
+function node(level, i){
+  const count = ROWS >> level;
+  const step  = LEAF_SPAN / (ROWS - 1);
+  const span  = 1 << level;
+  const first = i * span, last = first + span - 1;
+  const cx = W/2 - LEAF_SPAN/2 + ((first + last) / 2) * step;
+  return { x: cx, y: LEAF_Y - level * LEVEL_H, count };
+}
+
+/* ── drawing ─────────────────────────────────────────────────────── */
+function draw(t){
+  const col = C();
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.fillStyle = col.bg;
+  ctx.fillRect(0,0,cv.width,cv.height);
+
+  const s = Math.min(cv.width / W, cv.height / H);
+  ctx.setTransform(s,0,0,s,(cv.width - W*s)/2, (cv.height - H*s)/2);
+
+  /* 1–2 · fragments: chaos → strata ------------------------------- */
+  const compactP = seg(t, T.compact);
+  const fragAlpha = 1 - inOut(compactP);
+  if (fragAlpha > 0.002){
+    ctx.font = `500 21px ${MONO}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (const f of frag){
+      const inP  = clamp((seg(t, T.chaosIn) * 1.6) - f.d, 0, 1);
+      if (inP <= 0) continue;
+      const setP = outQuint(clamp(seg(t, T.settle) * 1.35 - f.d * 0.55, 0, 1));
+
+      const x = f.cx + (f.tx - f.cx) * setP;
+      const y = f.cy + (f.ty - f.cy) * setP;
+      const rot = f.rot * (1 - setP);
+      const scl = f.scl + (1 - f.scl) * setP;
+      // drift while still loose
+      const wob = (1 - setP) * 9;
+      const dx = Math.sin(t * 1.5 + f.d * 21) * wob;
+      const dy = Math.cos(t * 1.2 + f.d * 17) * wob;
+
+      ctx.save();
+      ctx.translate(x + dx, y + dy);
+      ctx.rotate(rot);
+      ctx.scale(scl, scl);
+      const settled = setP > 0.9;
+      ctx.globalAlpha = fragAlpha * inP * (0.28 + 0.72 * setP);
+      ctx.fillStyle = f.hot ? col.signal : (settled ? col.dim : col.faint);
+      ctx.fillText(f.txt, 0, 0);
+      ctx.restore();
+    }
+  }
+
+  /* 3 · each layer hashes down to a leaf ---------------------------- */
+  const foldP = seg(t, T.fold);
+  const rootP = seg(t, T.root);
+  if (compactP > 0){
+    const treeA = 1 - seg(t, T.wordmark) * 1.4;       // dissolve under the lockup
+    if (treeA > 0.004){
+      const e = inOut(compactP);
+      ctx.globalAlpha = treeA;
+
+      // the eight layers contracting into leaves
+      if (foldP <= 0){
+        for (let r = 0; r < ROWS; r++){
+          const lf = node(0, r);
+          const y0 = BASE_Y + r * ROW_GAP;
+          const y  = y0 + (lf.y - y0) * e;
+          const x  = W/2 + (lf.x - W/2) * e;
+          const w  = 1320 - (1320 - 26) * e;
+          ctx.fillStyle = r % 2 ? col.dim : col.ink;
+          ctx.fillRect(x - w/2, y - 1.5 - 4 * e, w, 3 + 8 * e);
+        }
+      }
+
+      /* 4 · pairs rise and merge, three times over ------------------ */
+      if (foldP > 0){
+        const phase = foldP * 3;
+        const L = Math.min(2, Math.floor(phase));
+        const p = clamp(phase - L, 0, 1);
+        const ep = outCubic(p);
+
+        // every level already merged stays put
+        for (let lvl = 0; lvl <= L; lvl++){
+          const cnt = ROWS >> lvl;
+          for (let i = 0; i < cnt; i++){
+            const n = node(lvl, i);
+            if (lvl === L){
+              // this level is on the move toward its parent
+              const par = node(lvl + 1, i >> 1);
+              const x = n.x + (par.x - n.x) * ep;
+              const y = n.y + (par.y - n.y) * ep;
+              ctx.globalAlpha = treeA;
+              ctx.strokeStyle = col.signal;
+              ctx.lineWidth = 1.8;
+              ctx.globalAlpha = treeA * Math.sin(p * Math.PI) * 0.85;
+              ctx.beginPath();
+              ctx.moveTo(x, y); ctx.lineTo(par.x, par.y);
+              ctx.stroke();
+              ctx.globalAlpha = treeA;
+              ctx.fillStyle = col.ink;
+              ctx.fillRect(x - 13, y - 5.5, 26, 11);
+            } else {
+              ctx.globalAlpha = treeA * 0.62;         // settled, receding
+              ctx.fillStyle = col.ink;
+              ctx.fillRect(n.x - 11, n.y - 4.5, 22, 9);
+            }
+          }
+          // the edges already drawn between settled levels — and, once the
+          // fold completes, the last pair's edges up into the root
+          if (lvl < L || (foldP >= 1 && lvl === L)){
+            const cnt2 = ROWS >> lvl;
+            ctx.globalAlpha = treeA * 0.40;
+            ctx.strokeStyle = col.dim;   // rule is invisible on dark
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            for (let i = 0; i < cnt2; i++){
+              const n = node(lvl, i), par = node(lvl + 1, i >> 1);
+              ctx.moveTo(n.x, n.y); ctx.lineTo(par.x, par.y);
+            }
+            ctx.stroke();
+          }
+        }
+
+        // the content address each merge produces
+        if (p > 0.15 && p < 0.98){
+          ctx.font = `500 15px ${MONO}`;
+          ctx.textAlign = 'center';
+          ctx.globalAlpha = treeA * Math.sin(p * Math.PI) * 0.6;
+          ctx.fillStyle = col.signal;
+          const parents = ROWS >> (L + 1);
+          for (let j = 0; j < parents; j++){
+            const par = node(L + 1, j);
+            const hex = (0x9f2c1a4e + j * 7919 + L * 104729).toString(16).slice(0, 8);
+            ctx.fillText(hex + '…', par.x, par.y - 20);
+          }
+        }
+      }
+    }
+  }
+
+  /* 5 · the root becomes the mark ---------------------------------- */
+  if (rootP > 0){
+    const e = outBack(rootP);
+    const size = 34 * e;
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = col.signal;
+    ctx.fillRect(W/2 - size/2, MARK_Y - size/2, size, size);
+    if (rootP < 1){
+      const ring = outQuint(rootP);
+      ctx.globalAlpha = (1 - ring) * 0.7;
+      ctx.strokeStyle = col.signal;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(W/2, MARK_Y, 26 + ring * 210, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  /* 6 · wordmark ---------------------------------------------------- */
+  const wp = seg(t, T.wordmark);
+  if (wp > 0){
+    const letters = 'STRATA'.split('');
+    ctx.font = `800 132px ${SANS}`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    const track = 11;
+    const widths = letters.map(ch => ctx.measureText(ch).width);
+    const total = widths.reduce((a,b) => a+b, 0) + track * (letters.length - 1);
+    let x = W/2 - total/2;
+    const baseY = H/2 + 14;
+    letters.forEach((ch, n) => {
+      const p = clamp(wp * 1.55 - n * 0.085, 0, 1);
+      if (p > 0){
+        const e = outQuint(p);
+        ctx.save();
+        ctx.globalAlpha = e;
+        const blur = (1 - e) * 13;
+        if (blur > 0.4 && ctx.filter !== undefined) ctx.filter = `blur(${blur}px)`;
+        ctx.fillStyle = col.ink;
+        ctx.fillText(ch, x, baseY + (1 - e) * 32);
+        ctx.restore();
+      }
+      x += widths[n] + track;
+    });
+  }
+
+  /* 7 · hairline, then ULPF tracking out ---------------------------- */
+  const lp = seg(t, T.rule);
+  if (lp > 0){
+    const e = inOut(lp);
+    const half = 300 * e;
+    ctx.globalAlpha = e * 0.9;
+    ctx.strokeStyle = col.rule;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(W/2 - half, H/2 + 62);
+    ctx.lineTo(W/2 + half, H/2 + 62);
+    ctx.stroke();
+  }
+
+  const up = seg(t, T.ulpf);
+  if (up > 0){
+    const e = outCubic(up);
+    const label = 'ULPF · UNIVERSAL LOG PRE-PROCESSING FRAMEWORK';
+    ctx.font = `700 19px ${SANS}`;
+    ctx.textAlign = 'left';
+    const track = 2.2 + (1 - e) * 9;          // tracks in as it resolves
+    const chars = label.split('');
+    const widths = chars.map(ch => ctx.measureText(ch).width);
+    const total = widths.reduce((a,b) => a+b, 0) + track * (chars.length - 1);
+    let x = W/2 - total/2;
+    ctx.globalAlpha = e;
+    ctx.fillStyle = col.dim;
+    chars.forEach((ch, n) => { ctx.fillText(ch, x, H/2 + 118); x += widths[n] + track; });
+  }
+
+  /* 8 · the line ---------------------------------------------------- */
+  const gp = seg(t, T.tagline);
+  if (gp > 0){
+    const e = outCubic(gp);
+    ctx.globalAlpha = e;
+    ctx.font = `600 25px ${SANS}`;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = col.signal;
+    ctx.fillText('Nothing is translated away.', W/2, H/2 + 186 - (1 - e) * 10);
+  }
+
+  ctx.globalAlpha = 1;
+}
+
+/* ── final frame, for reduced-motion ─────────────────────────────── */
+function drawStatic(){ draw(T.hold[0] + 0.4); }
+
+/* ── engine ──────────────────────────────────────────────────────── */
+let start = null, loop = true, raf = null;
+
+function frame(now){
+  if (start === null) start = now;
+  const t = (now - start) / 1000;
+  draw(Math.min(t, END));
+  if (t >= END){
+    if (loop){ start = now; }
+    else { return; }
+  }
+  raf = requestAnimationFrame(frame);
+}
+
+function resize(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width  = Math.round(innerWidth  * dpr);
+  cv.height = Math.round(innerHeight * dpr);
+  if (reduced) drawStatic();
+}
+
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+addEventListener('resize', resize);
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (k === 'r'){ start = null; if (!raf && !reduced) raf = requestAnimationFrame(frame); }
+  else if (k === 'l') loop = !loop;
+  else if (k === 't'){ dark = !dark; document.body.classList.toggle('paper', !dark);
+                       if (reduced) drawStatic(); }
+  else if (k === 'h') document.getElementById('hint').classList.toggle('on');
+});
+
+/* fonts must be measured before layout, or the rows come out ragged */
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
+  resize();
+  layout();
+  if (reduced) drawStatic();
+  else raf = requestAnimationFrame(frame);
+});
+</script>
+</body>
+</html>
