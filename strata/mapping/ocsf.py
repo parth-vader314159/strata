@@ -5,8 +5,8 @@ Vendor vocabulary -> OCSF 1.8. Requirements (c) and (d).
 
 WHY OCSF RATHER THAN OUR OWN SCHEMA
 
-The Open Cybersecurity Schema Framework is vendor-neutral, governed by the
-Linux Foundation, and at version 1.8.0 as of March 2026. Its base event class
+The Open Cybersecurity Schema Framework is vendor-neutral and governed by the
+Linux Foundation. Its base event class
 already defines `unmapped` and `raw_data` -- so requirements (a), (c) and (d)
 land on fields that already exist in a published standard rather than on our
 opinion. Inventing a schema would cost weeks, produce something worse, and

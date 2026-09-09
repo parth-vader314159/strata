@@ -215,4 +215,5 @@ the network is impossible rather than merely unnecessary. Checklist:
 | Defend the security design | [docs/THREAT-MODEL.md](docs/THREAT-MODEL.md) |
 | Defend the throughput numbers | [docs/BENCHMARK.md](docs/BENCHMARK.md) |
 | See the field mappings | [docs/GRAMMAR-REFERENCE.md](docs/GRAMMAR-REFERENCE.md) |
+| Cite sources, or check licences | [docs/REFERENCES.md](docs/REFERENCES.md) |
 | Write a grammar | README § "Writing a grammar" |
