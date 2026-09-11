@@ -502,11 +502,14 @@ function pipelineFlow(m, tri){
       fill="var(--warn)">QUARANTINE</text>
     <text x="${qx+14}" y="${y+h+71}" font-size="14" font-weight="700"
       fill="var(--warn)">${fmt(m.rejected)}</text>`;
+  // Rewind replays out of the LEDGER, not out of intake — the whole thesis is
+  // that the ledger is the source of truth, so the arrow has to start there.
+  const rx = 8 + (bw + gap) + bw * 0.5;
   const rewind = `
-    <path d="M${8+bw/2} ${y+h+90} L${8+bw/2} ${y+h+62} " stroke="var(--signal)" stroke-width="0"/>
-    <path d="M${8+bw*0.5} ${y+h+4} L${8+bw*0.5} ${y+h+96} L${8+3*(bw+gap)+bw*0.5} ${y+h+96}"
-      stroke="var(--signal)" stroke-width="1.5" fill="none" stroke-dasharray="5 4"/>
-    <text x="${8+bw*0.5+12}" y="${y+h+112}" font-size="10" font-family="var(--mono)"
+    <path d="M${rx} ${y+h+4} L${rx} ${y+h+96} L${8+3*(bw+gap)+bw*0.5} ${y+h+96}"
+      stroke="var(--signal)" stroke-width="1.5" fill="none" stroke-dasharray="5 4"
+      marker-end="url(#arr)"/>
+    <text x="${rx+12}" y="${y+h+112}" font-size="10" font-family="var(--mono)"
       fill="var(--signal)">rewind — re-derive history from preserved originals</text>`;
   return `<div class="scroll"><svg viewBox="0 0 ${w} 232" style="width:100%;min-width:900px;height:auto"
       role="img" aria-label="Pipeline: intake, ledger, triage, read, map, outlets, with a quarantine branch and a rewind path from the ledger.">
@@ -515,6 +518,8 @@ function pipelineFlow(m, tri){
         <polygon points="0,0 10,4 0,8" fill="var(--rule-2)"/></marker>
       <marker id="arw" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="7" markerHeight="6" orient="auto">
         <polygon points="0,0 10,4 0,8" fill="var(--warn)"/></marker>
+      <marker id="arr" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="7" markerHeight="6" orient="auto">
+        <polygon points="0,0 10,4 0,8" fill="var(--signal)"/></marker>
     </defs>${arrows}${boxes}${quarantine}${rewind}</svg></div>`;
 }
 

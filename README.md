@@ -163,6 +163,7 @@ works that way, and how you would rebuild it from an empty directory — is
 **[docs/HANDBOOK.md](docs/HANDBOOK.md)**. Decisions in brief:
 **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** ·
 threat model: **[docs/THREAT-MODEL.md](docs/THREAT-MODEL.md)** ·
+the console, screen by screen: **[docs/UI-GUIDE.md](docs/UI-GUIDE.md)** ·
 references and third-party components:
 **[docs/REFERENCES.md](docs/REFERENCES.md)**.
 
