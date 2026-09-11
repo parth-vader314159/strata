@@ -197,15 +197,15 @@ the video reel. That is enforced by a CI job, not just intended.
 
 **This project was built with substantial assistance from Claude (Anthropic).**
 
-The git history records it: every commit carries a `Co-Authored-By: Claude`
-trailer, so the record is honest and auditable rather than something to be
-discovered.
+This section is the disclosure. The commit history carries no AI co-author
+trailers — they were removed deliberately, partly because they also embedded a
+link to a private assistant session — so this file is where the record lives.
 
 **Check your competition's rules on AI assistance and declare it in whatever
-form they require.** Many hackathons now permit AI tooling and ask only that you
-disclose it; some require a statement in the README. What you should not do is
-leave it implicit — the commit trailers are already public in the repository,
-so a reviewer will find them either way, and finding them beats being told.
+form they require.** Many now permit AI tooling and ask only that you say so;
+some want a line in the README. Declaring it somewhere you control is cleaner
+than scattering it through commit metadata, but it does mean the declaration has
+to actually be made rather than assumed.
 
 What you should be able to do regardless, and what actually gets marked: explain
 every design decision, defend the architecture in a viva, and modify the code.
